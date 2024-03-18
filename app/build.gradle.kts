@@ -1,6 +1,8 @@
 plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsKotlinAndroid)
+    id("com.google.devtools.ksp")
+    id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
 }
 
@@ -67,6 +69,11 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifeCycleVersion")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:$lifeCycleVersion")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycleVersion")
+
+    //Hilt
+    implementation("com.google.dagger:hilt-android:2.48")
+    ksp("com.google.dagger:hilt-android-compiler:2.48")
+    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
 
     //ROOM
     val room_version = "2.6.1"
