@@ -65,6 +65,8 @@ dependencies {
 
     implementation("androidx.navigation:navigation-compose:2.7.6")
 
+    implementation("io.coil-kt:coil-compose:1.3.2")
+
     val lifeCycleVersion = "2.7.0"
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:$lifeCycleVersion")
     implementation ("androidx.lifecycle:lifecycle-runtime-compose:$lifeCycleVersion")

@@ -72,7 +72,7 @@ class ProductViewModel @Inject constructor(
                 }
             }
 
-            StoreEvent.Save -> {
+            StoreEvent.onSave -> {
                 val nombre = state.value.store.nombre
                 val descripcion = state.value.store.descripcion
                 val detalle = state.value.store.detalle
@@ -130,7 +130,7 @@ class ProductViewModel @Inject constructor(
                 }
             }
 
-            StoreEvent.New -> {
+            StoreEvent.onNew -> {
                 _state.update {
                     it.copy(
                         succesMessage = null,
@@ -164,6 +164,6 @@ sealed interface StoreEvent {
     data class Precio(val precio: String) : StoreEvent
     data class Imagen(val imagen: String) : StoreEvent
     data class Delete(val store: StoreEntity) : StoreEvent
-    object Save : StoreEvent
-    object New : StoreEvent
+    object onSave : StoreEvent
+    object onNew : StoreEvent
 }
