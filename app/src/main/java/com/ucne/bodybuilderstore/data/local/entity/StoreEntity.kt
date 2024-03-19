@@ -6,10 +6,10 @@ import androidx.room.PrimaryKey
 @Entity("table_store")
 data class StoreEntity(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
-    val nombre: String,
-    val decripción: String,
-    val detalle: String,
-    val precio: Float,
-    val imagen: String
+    val id: Int = 0,
+    val nombre: String = "",
+    val descripcion: String = "",
+    val detalle: String = "",
+    val precio: Float = 0.0f,
+    val imagen: String = ""
 )
