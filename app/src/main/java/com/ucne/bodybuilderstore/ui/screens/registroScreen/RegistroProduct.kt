@@ -1,4 +1,4 @@
-package com.ucne.bodybuilderstore.ui.screens.homeScreen
+package com.ucne.bodybuilderstore.ui.screens.registroScreen
 
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -35,9 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ucne.bodybuilderstore.ui.screens.homeScreen.ProductViewModel
-import com.ucne.bodybuilderstore.ui.screens.homeScreen.RegistroProduct
-import com.ucne.bodybuilderstore.ui.screens.homeScreen.StoreEvent
 import com.ucne.bodybuilderstore.util.FileUtil
 
 @Composable

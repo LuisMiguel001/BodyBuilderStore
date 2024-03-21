@@ -1,4 +1,4 @@
-package com.ucne.bodybuilderstore.ui.screens.homeScreen
+package com.ucne.bodybuilderstore.ui.screens.registroScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.runtime.Composable

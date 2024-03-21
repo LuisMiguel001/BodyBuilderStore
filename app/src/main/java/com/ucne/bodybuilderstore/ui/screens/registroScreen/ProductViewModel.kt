@@ -1,4 +1,4 @@
-package com.ucne.bodybuilderstore.ui.screens.homeScreen
+package com.ucne.bodybuilderstore.ui.screens.registroScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -79,7 +79,7 @@ class ProductViewModel @Inject constructor(
                 val precio = state.value.store.precio
                 val imagen = state.value.store.imagen
 
-                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank() || precio == 0f || imagen.isBlank()) {
+                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank() || imagen.isBlank()) {
                     _state.update {
                         it.copy(
                             error = "Por favor, complete todos los campos."
