@@ -20,6 +20,10 @@ class ProductViewModel @Inject constructor(
     val state = _state.asStateFlow()
     val stores: Flow<List<StoreEntity>> = storeRepository.getProducto()
 
+    fun getProductoById(id: Int): Flow<StoreEntity?> {
+        return storeRepository.getProductoById(id)
+    }
+
     fun onEvent(event: StoreEvent) {
         when (event) {
             is StoreEvent.Id -> {

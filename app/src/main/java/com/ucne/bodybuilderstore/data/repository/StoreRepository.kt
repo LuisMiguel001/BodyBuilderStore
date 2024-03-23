@@ -19,4 +19,8 @@ class StoreRepository @Inject constructor(
     fun getProducto(): Flow<List<StoreEntity>> {
         return storeDao.getAll()
     }
+
+    fun getProductoById(id: Int): Flow<StoreEntity?> {
+        return storeDao.getById(id)
+    }
 }
