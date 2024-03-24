@@ -62,6 +62,7 @@ fun RegistroProduct(
             .fillMaxSize()
             .padding(16.dp)
             .verticalScroll(rememberScrollState())
+            .padding(bottom = 70.dp),
     ) {
         Spacer(modifier = Modifier.height(60.dp))
         Text(

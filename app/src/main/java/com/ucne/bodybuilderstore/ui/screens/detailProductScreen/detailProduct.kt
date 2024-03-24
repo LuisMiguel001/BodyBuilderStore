@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -51,8 +53,13 @@ fun ProductDetailsScreen(
 ) {
     val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
     val painter: Painter = rememberImagePainter(data = producto?.imagen)
+    val myGreen = Color(android.graphics.Color.parseColor("#00A42E"))
 
-    Column {
+    Column(
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .padding(bottom = 80.dp)
+    ) {
         Spacer(modifier = Modifier.height(60.dp))
         Image(
             painter = painter,
@@ -100,7 +107,7 @@ fun ProductDetailsScreen(
                    Text(
                        text = "$${producto?.precio}",
                        style = MaterialTheme.typography.titleMedium,
-                       color = Color.Green
+                       color = myGreen
                    )
                }
 

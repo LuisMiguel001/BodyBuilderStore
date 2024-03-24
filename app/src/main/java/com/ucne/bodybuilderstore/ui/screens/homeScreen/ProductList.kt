@@ -16,8 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,7 +52,9 @@ fun ProductosScreen(
     val productos by viewModel.stores.collectAsState(initial = emptyList())
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 70.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.height(60.dp))
@@ -55,9 +63,9 @@ fun ProductosScreen(
             modifier = Modifier.padding(8.dp)
         ) {
             items(productos) { producto ->
-                ProductoCard(producto) {
-                    navController.navigate("detalle/${producto.id}")
-                }
+                ProductoCard(producto = producto,
+                    onDeleteClick = {viewModel.onEvent(StoreEvent.Delete(producto))},
+                    onClick = { navController.navigate("detalle/${producto.id}") })
             }
         }
         Spacer(modifier = Modifier.height(1000.dp))
@@ -67,9 +75,11 @@ fun ProductosScreen(
 @Composable
 fun ProductoCard(
     producto: StoreEntity,
+    onDeleteClick: () -> Unit,
     onClick: () -> Unit
 ) {
     val painter: Painter = rememberImagePainter(data = producto.imagen)
+    val myGreen = Color(android.graphics.Color.parseColor("#00A42E"))
 
     Card(
         elevation = CardDefaults.cardElevation(10.dp),
@@ -114,18 +124,20 @@ fun ProductoCard(
                             Text(
                                 text = "$${producto.precio}",
                                 style = MaterialTheme.typography.titleSmall,
-                                color = Color.Green
+                                color = myGreen
                             )
                         }
-/*                        IconButton(
-                            onClick = onDeleteClick
+                        IconButton(
+                            onClick = onDeleteClick,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
                                 tint = Color.Red,
                                 contentDescription = "Eliminar"
                             )
-                        }*/
+                        }
                     }
                 }
             }
