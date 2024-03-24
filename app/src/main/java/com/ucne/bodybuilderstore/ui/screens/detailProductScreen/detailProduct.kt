@@ -99,7 +99,8 @@ fun ProductDetailsScreen(
                            fontWeight = FontWeight.Bold,
                            fontSize = 18.sp,
                            color = Color.White,
-                           modifier = Modifier.padding(horizontal = 18.dp)
+                           modifier = Modifier
+                               .padding(horizontal = 18.dp)
                                .align(Alignment.CenterHorizontally)
                        )
                    }

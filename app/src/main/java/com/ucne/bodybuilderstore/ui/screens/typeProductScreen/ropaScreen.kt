@@ -1,4 +1,4 @@
-package com.ucne.bodybuilderstore.ui.screens.homeScreen
+package com.ucne.bodybuilderstore.ui.screens.typeProductScreen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Card
@@ -38,18 +36,17 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
 
 @Composable
-fun ProductosScreen(
+fun ropaScreen(
     viewModel: ProductViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    val productos by viewModel.stores.collectAsState(initial = emptyList())
+    val productos by viewModel.getProductosByType("Ropa").collectAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -63,7 +60,7 @@ fun ProductosScreen(
             modifier = Modifier.padding(8.dp)
         ) {
             items(productos) { producto ->
-                ProductoCard(producto = producto,
+                RopaCard(producto = producto,
                     onDeleteClick = {viewModel.onEvent(StoreEvent.Delete(producto))},
                     onClick = { navController.navigate("detalle/${producto.id}") })
             }
@@ -73,7 +70,7 @@ fun ProductosScreen(
 }
 
 @Composable
-fun ProductoCard(
+fun RopaCard(
     producto: StoreEntity,
     onDeleteClick: () -> Unit,
     onClick: () -> Unit
@@ -109,7 +106,7 @@ fun ProductoCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .fillMaxSize()
-                            .background(Color.White)
+                            .background(androidx.compose.ui.graphics.Color.White)
                     ) {
                         Column(
                             modifier = Modifier.padding(8.dp)
@@ -117,7 +114,7 @@ fun ProductoCard(
                             Text(
                                 text = producto.nombre,
                                 style = MaterialTheme.typography.titleSmall,
-                                color = Color.Black,
+                                color = androidx.compose.ui.graphics.Color.Black,
                                 fontWeight = FontWeight.Bold
                             )
                             Spacer(modifier = Modifier.height(4.dp))
@@ -134,7 +131,7 @@ fun ProductoCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                tint = Color.Red,
+                                tint = androidx.compose.ui.graphics.Color.Red,
                                 contentDescription = "Eliminar"
                             )
                         }
@@ -144,4 +141,3 @@ fun ProductoCard(
         }
     }
 }
-

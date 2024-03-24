@@ -20,6 +20,10 @@ class ProductViewModel @Inject constructor(
     val state = _state.asStateFlow()
     val stores: Flow<List<StoreEntity>> = storeRepository.getProducto()
 
+    fun getProductosByType(type: String): Flow<List<StoreEntity>> {
+        return storeRepository.getProductosByType(type)
+    }
+
     fun getProductoById(id: Int): Flow<StoreEntity?> {
         return storeRepository.getProductoById(id)
     }
@@ -76,12 +80,21 @@ class ProductViewModel @Inject constructor(
                 }
             }
 
+            is StoreEvent.TipoProducto -> {
+                _state.update {
+                    it.copy(
+                        store = it.store.copy(tipo = event.tipo)
+                    )
+                }
+            }
+
             StoreEvent.onSave -> {
                 val nombre = state.value.store.nombre
                 val descripcion = state.value.store.descripcion
                 val detalle = state.value.store.detalle
                 val precio = state.value.store.precio
                 val imagen = state.value.store.imagen
+                val tipo = state.value.store.tipo
 
                 if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank() || imagen.isBlank()) {
                     _state.update {
@@ -97,7 +110,8 @@ class ProductViewModel @Inject constructor(
                     descripcion = descripcion,
                     detalle = detalle,
                     precio = precio,
-                    imagen = imagen
+                    imagen = imagen,
+                    tipo = tipo
                 )
 
                 _state.update {
@@ -167,6 +181,7 @@ sealed interface StoreEvent {
     data class Detalle(val detalle: String) : StoreEvent
     data class Precio(val precio: String) : StoreEvent
     data class Imagen(val imagen: String) : StoreEvent
+    data class TipoProducto(val tipo: String) : StoreEvent
     data class Delete(val store: StoreEntity) : StoreEvent
     object onSave : StoreEvent
     object onNew : StoreEvent

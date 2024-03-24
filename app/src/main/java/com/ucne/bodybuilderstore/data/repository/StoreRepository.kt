@@ -23,4 +23,8 @@ class StoreRepository @Inject constructor(
     fun getProductoById(id: Int): Flow<StoreEntity?> {
         return storeDao.getById(id)
     }
+
+    fun getProductosByType(type: String): Flow<List<StoreEntity>> {
+        return storeDao.getByType(type)
+    }
 }

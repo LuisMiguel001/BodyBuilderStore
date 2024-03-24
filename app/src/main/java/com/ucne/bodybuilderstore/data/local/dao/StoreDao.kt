@@ -20,4 +20,7 @@ interface StoreDao {
 
     @Query("SELECT * FROM table_store WHERE id = :id LIMIT 1")
     fun getById(id: Int): Flow<StoreEntity?>
+
+    @Query("SELECT * FROM table_store WHERE tipo = :type")
+    fun getByType(type: String): Flow<List<StoreEntity>>
 }

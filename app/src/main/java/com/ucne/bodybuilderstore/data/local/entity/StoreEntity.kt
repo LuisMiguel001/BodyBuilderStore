@@ -11,5 +11,6 @@ data class StoreEntity(
     val descripcion: String = "",
     val detalle: String = "",
     val precio: Float = 0.0f,
-    val imagen: String = ""
+    val imagen: String = "",
+    val tipo: String = ""
 )

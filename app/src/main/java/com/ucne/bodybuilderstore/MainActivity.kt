@@ -6,6 +6,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -30,8 +31,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
-import com.ucne.bodybuilderstore.ui.screens.homeScreen.ProductosScreen
+import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ProductosScreen
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.RegistroProduct
+import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.accesorioScreen
+import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ropaScreen
 import com.ucne.bodybuilderstore.ui.theme.BodyBuilderStoreTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -58,10 +61,17 @@ class MainActivity : ComponentActivity() {
                                 )
                             },
                             actions = {
+                                IconButton(onClick = { navController.navigate("registro") }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "add",
+                                        tint = Color.Green
+                                    )
+                                }
                                 IconButton(onClick = { navController.navigate("") }) {
                                     Icon(
                                         imageVector = Icons.Default.ShoppingCart,
-                                        contentDescription = "Add",
+                                        contentDescription = "Cart",
                                         tint = Color.Green
                                     )
                                 }
@@ -87,10 +97,13 @@ class MainActivity : ComponentActivity() {
                                     onClick = {
                                         selectedItem = index
                                         if (index == 0) {
-                                            navController.navigate("consulta")
+                                            navController.navigate("suplemento")
                                         }
                                         if (index == 1) {
-                                            navController.navigate("registro")
+                                            navController.navigate("accesorio")
+                                        }
+                                        if (index == 2) {
+                                            navController.navigate("ropa")
                                         }
                                     },
                                     alwaysShowLabel = false
@@ -101,13 +114,19 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = "consulta",
+                        startDestination = "suplemento",
                     ) {
+                        composable("suplemento") {
+                            ProductosScreen(navController = navController)
+                        }
+                        composable("accesorio") {
+                            accesorioScreen(navController = navController)
+                        }
+                        composable("ropa") {
+                            ropaScreen(navController = navController)
+                        }
                         composable("registro") {
                             RegistroProduct()
-                        }
-                        composable("consulta") {
-                            ProductosScreen(navController = navController)
                         }
                         composable(
                             route = "detalle/{id}",

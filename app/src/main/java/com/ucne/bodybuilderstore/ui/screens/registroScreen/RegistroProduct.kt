@@ -3,6 +3,7 @@ package com.ucne.bodybuilderstore.ui.screens.registroScreen
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,10 +21,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -31,19 +37,28 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.semantics.SemanticsProperties.ImeAction
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.util.FileUtil
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroProduct(
     viewModel: ProductViewModel = hiltViewModel()
@@ -52,10 +67,16 @@ fun RegistroProduct(
     val _state = state.store
 
     val context = LocalContext.current
-    val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-        val filePath = uri?.let { FileUtil.from(context, it) }
-        filePath?.let { StoreEvent.Imagen(it) }?.let { viewModel.onEvent(it) }
-    }
+    val launcher =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
+            val filePath = uri?.let { FileUtil.from(context, it) }
+            filePath?.let { StoreEvent.Imagen(it) }?.let { viewModel.onEvent(it) }
+        }
+
+    var expanded by remember { mutableStateOf(false) }
+    var selectedType by remember { mutableStateOf("") }
+    var textfieldSize by remember { mutableStateOf(Size.Zero) }
+    val icon = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
 
     Column(
         modifier = Modifier
@@ -66,10 +87,12 @@ fun RegistroProduct(
     ) {
         Spacer(modifier = Modifier.height(60.dp))
         Text(
-            text = "Registro de Tienda",
+            text = "Registro de Productos",
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally),
-            color = Color.Cyan
+            color = Color.Blue,
+            fontWeight = FontWeight.Bold,
+            fontSize = 18.sp
         )
 
         if (_state.imagen.isNotEmpty()) {
@@ -90,7 +113,7 @@ fun RegistroProduct(
                 .fillMaxWidth()
                 .padding(5.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Blue,
+                containerColor = Color.Gray,
                 contentColor = Color.White
             )
         ) {
@@ -105,6 +128,47 @@ fun RegistroProduct(
                 .fillMaxWidth()
                 .padding(5.dp)
         )
+
+        Column {
+            OutlinedTextField(
+                value = selectedType,
+                onValueChange = { selectedType = it },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+                    .onGloballyPositioned { coordinates ->
+                        textfieldSize = coordinates.size.toSize()
+                    },
+                readOnly = true,
+                label = { Text("Tipo de Producto") },
+                trailingIcon = {
+                    Icon(
+                        icon,
+                        "Toggle Dropdown",
+                        Modifier.clickable { expanded = !expanded }
+                    )
+                }
+            )
+
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+            ) {
+                listOf("Suplemento", "Accesorio", "Ropa").forEach { tipo ->
+                    DropdownMenuItem(onClick = {
+                        selectedType = tipo
+                        expanded = false
+                        viewModel.onEvent(StoreEvent.TipoProducto(tipo))
+                    },
+                        text = {
+                            Text(text = tipo)
+                        }
+                    )
+                }
+            }
+        }
 
         OutlinedTextField(
             value = _state.descripcion,
@@ -131,8 +195,10 @@ fun RegistroProduct(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(5.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number,
-                imeAction = androidx.compose.ui.text.input.ImeAction.Next)
+            keyboardOptions = KeyboardOptions.Default.copy(
+                keyboardType = KeyboardType.Number,
+                imeAction = androidx.compose.ui.text.input.ImeAction.Next
+            )
         )
 
         Row(
@@ -149,8 +215,8 @@ fun RegistroProduct(
                     .weight(1f)
                     .padding(4.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Cyan,
-                    contentColor = Color.Black
+                    containerColor = Color.Blue,
+                    contentColor = Color.LightGray
                 )
             ) {
                 Row(
