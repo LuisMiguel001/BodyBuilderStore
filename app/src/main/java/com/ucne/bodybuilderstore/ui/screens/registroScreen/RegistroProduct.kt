@@ -105,19 +105,30 @@ fun RegistroProduct(
             )
         }
 
-        Button(
+        Surface(
             onClick = {
                 launcher.launch("image/*")
             },
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Gray,
-                contentColor = Color.White
-            )
+                .padding(5.dp)
+                .height(50.dp),
+            color = Color.Gray
         ) {
-            Text("Seleccionar Imagen")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxSize().padding(12.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Agregar Imagen",
+                    modifier = Modifier.size(24.dp),
+                    tint = Color.White
+                )
+                Text("Agregar Imagen", color = Color.White)
+            }
         }
 
         OutlinedTextField(
