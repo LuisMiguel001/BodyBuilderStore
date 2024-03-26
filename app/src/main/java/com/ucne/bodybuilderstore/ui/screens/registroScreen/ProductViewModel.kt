@@ -96,7 +96,7 @@ class ProductViewModel @Inject constructor(
                 val imagen = state.value.store.imagen
                 val tipo = state.value.store.tipo
 
-                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank() || imagen.isBlank()) {
+                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank() || imagen.isBlank() || precio == 0.0f || descripcion.isBlank()) {
                     _state.update {
                         it.copy(
                             error = "Por favor, complete todos los campos."
@@ -153,7 +153,7 @@ class ProductViewModel @Inject constructor(
                     it.copy(
                         succesMessage = null,
                         error = null,
-                        store = StoreEntity()
+                        store = StoreEntity(),
                     )
                 }
             }

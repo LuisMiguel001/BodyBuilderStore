@@ -1,5 +1,6 @@
 package com.ucne.bodybuilderstore.ui.screens.registroScreen
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -21,6 +22,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
@@ -31,10 +33,14 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,20 +54,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.util.FileUtil
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroProduct(
-    viewModel: ProductViewModel = hiltViewModel()
+    viewModel: ProductViewModel = hiltViewModel(),
+    navigateBack: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val _state = state.store
@@ -78,197 +85,220 @@ fun RegistroProduct(
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     val icon = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
-            .padding(bottom = 70.dp),
-    ) {
-        Spacer(modifier = Modifier.height(60.dp))
-        Text(
-            text = "Registro de Productos",
-            style = MaterialTheme.typography.titleMedium,
-            modifier = Modifier.align(Alignment.CenterHorizontally),
-            color = Color.Blue,
-            fontWeight = FontWeight.Bold,
-            fontSize = 18.sp
-        )
-
-        if (_state.imagen.isNotEmpty()) {
-            Image(
-                painter = rememberImagePainter(_state.imagen),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(200.dp)
-                    .clip(RoundedCornerShape(8.dp))
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Blue
+                ),
+                title = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(
+                            onClick = { navigateBack() }
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Home",
+                                tint = Color.White
+                            )
+                        }
+                        Text(
+                            text = "Registro de Producto",
+                            textAlign = TextAlign.Start,
+                            color = Color.White
+                        )
+                    }
+                }
             )
         }
-
-        Surface(
-            onClick = {
-                launcher.launch("image/*")
-            },
-            shape = RoundedCornerShape(8.dp),
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-                .height(50.dp),
-            color = Color.Gray
+                .fillMaxSize()
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(bottom = 70.dp),
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxSize().padding(12.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Add,
-                    contentDescription = "Agregar Imagen",
-                    modifier = Modifier.size(24.dp),
-                    tint = Color.White
+            Spacer(modifier = Modifier.height(50.dp))
+            if (_state.imagen.isNotEmpty()) {
+                Image(
+                    painter = rememberImagePainter(_state.imagen),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(200.dp)
+                        .clip(RoundedCornerShape(8.dp))
                 )
-                Text("Agregar Imagen", color = Color.White)
             }
-        }
 
-        OutlinedTextField(
-            value = _state.nombre,
-            onValueChange = { viewModel.onEvent(StoreEvent.Nombre(it)) },
-            label = { Text(text = "Nombre") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-        )
-
-        Column {
-            OutlinedTextField(
-                value = selectedType,
-                onValueChange = { selectedType = it },
+            Surface(
+                onClick = {
+                    launcher.launch("image/*")
+                },
+                shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
-                    .onGloballyPositioned { coordinates ->
-                        textfieldSize = coordinates.size.toSize()
-                    },
-                readOnly = true,
-                label = { Text("Tipo de Producto") },
-                trailingIcon = {
+                    .height(50.dp),
+                color = Color.Gray
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(12.dp)
+                ) {
                     Icon(
-                        icon,
-                        "Toggle Dropdown",
-                        Modifier.clickable { expanded = !expanded }
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Agregar Imagen",
+                        modifier = Modifier.size(24.dp),
+                        tint = Color.White
                     )
+                    Text("Agregar Imagen", color = Color.White)
                 }
+            }
+
+            OutlinedTextField(
+                value = _state.nombre,
+                onValueChange = { viewModel.onEvent(StoreEvent.Nombre(it)) },
+                label = { Text(text = "Marca") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
             )
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
+            Column {
+                OutlinedTextField(
+                    value = selectedType,
+                    onValueChange = { selectedType = it },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(5.dp)
+                        .onGloballyPositioned { coordinates ->
+                            textfieldSize = coordinates.size.toSize()
+                        },
+                    readOnly = true,
+                    label = { Text("Tipo de Producto") },
+                    trailingIcon = {
+                        Icon(
+                            icon,
+                            "Toggle Dropdown",
+                            Modifier.clickable { expanded = !expanded }
+                        )
+                    }
+                )
+
+                DropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier
+                        .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+                ) {
+                    listOf("Suplemento", "Accesorio", "Ropa").forEach { tipo ->
+                        DropdownMenuItem(onClick = {
+                            selectedType = tipo
+                            expanded = false
+                            viewModel.onEvent(StoreEvent.TipoProducto(tipo))
+                        },
+                            text = {
+                                Text(text = tipo)
+                            }
+                        )
+                    }
+                }
+            }
+
+            OutlinedTextField(
+                value = _state.descripcion,
+                onValueChange = { viewModel.onEvent(StoreEvent.Descripcion(it)) },
+                label = { Text(text = "Descripción") },
                 modifier = Modifier
-                    .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            )
+
+            OutlinedTextField(
+                value = _state.detalle,
+                onValueChange = { viewModel.onEvent(StoreEvent.Detalle(it)) },
+                label = { Text(text = "Detalle") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            )
+
+            OutlinedTextField(
+                value = _state.precio.toString(),
+                onValueChange = { viewModel.onEvent(StoreEvent.Precio(it)) },
+                label = { Text(text = "Precio") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = androidx.compose.ui.text.input.ImeAction.Next
+                )
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp, 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                listOf("Suplemento", "Accesorio", "Ropa").forEach { tipo ->
-                    DropdownMenuItem(onClick = {
-                        selectedType = tipo
-                        expanded = false
-                        viewModel.onEvent(StoreEvent.TipoProducto(tipo))
+                Button(
+                    onClick = {
+                        viewModel.onEvent(StoreEvent.onNew)
                     },
-                        text = {
-                            Text(text = tipo)
-                        }
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Blue,
+                        contentColor = Color.LightGray
                     )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(imageVector = Icons.Default.Refresh, contentDescription = "Nuevo")
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Nuevo")
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.onEvent(StoreEvent.onSave)
+                    },
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(4.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Green,
+                        contentColor = Color.Black
+                    )
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(imageVector = Icons.Default.Add, contentDescription = "Guardar")
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text("Guardar")
+                    }
                 }
             }
         }
-
-        OutlinedTextField(
-            value = _state.descripcion,
-            onValueChange = { viewModel.onEvent(StoreEvent.Descripcion(it)) },
-            label = { Text(text = "Descripción") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-        )
-
-        OutlinedTextField(
-            value = _state.detalle,
-            onValueChange = { viewModel.onEvent(StoreEvent.Detalle(it)) },
-            label = { Text(text = "Detalle") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp)
-        )
-
-        OutlinedTextField(
-            value = _state.precio.toString(),
-            onValueChange = { viewModel.onEvent(StoreEvent.Precio(it)) },
-            label = { Text(text = "Precio") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp),
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = androidx.compose.ui.text.input.ImeAction.Next
-            )
-        )
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(5.dp, 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Button(
-                onClick = {
-                    viewModel.onEvent(StoreEvent.onNew)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Blue,
-                    contentColor = Color.LightGray
-                )
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.Default.Refresh, contentDescription = "Nuevo")
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Nuevo")
-                }
-            }
-
-            Button(
-                onClick = {
-                    viewModel.onEvent(StoreEvent.onSave)
-                },
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(4.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Green,
-                    contentColor = Color.Black
-                )
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.Default.Add, contentDescription = "Guardar")
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Guardar")
-                }
-            }
+        state.succesMessage?.let {
+            MessageCard(message = it, color = Color.Green)
         }
-    }
-    state.succesMessage?.let {
-        MessageCard(message = it, color = Color.Green)
-    }
 
-    state.error?.let {
-        MessageCard(message = it, color = Color.Red)
+        state.error?.let {
+            MessageCard(message = it, color = Color.Red)
+        }
     }
 }
 
