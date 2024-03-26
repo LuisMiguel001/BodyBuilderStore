@@ -42,14 +42,17 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartViewModel
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
+import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
 import kotlinx.coroutines.flow.Flow
 
 @Composable
 fun ProductDetailsScreen(
     navController: NavController,
     productId: Int,
-    viewModel: ProductViewModel = hiltViewModel()
+    viewModel: ProductViewModel = hiltViewModel(),
+    viewModelC: CartViewModel = hiltViewModel()
 ) {
     val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
     val painter: Painter = rememberImagePainter(data = producto?.imagen)
@@ -163,7 +166,10 @@ fun ProductDetailsScreen(
                 }
 
                 Button(
-                    onClick = { /* TODO: Handle buy now action */ },
+                    onClick = {
+                        producto?.let { viewModelC.addToCart(imagen = it.imagen, nombre = it.nombre, precio = it.precio, cantidad = 1) }
+                        // Aquí puedes agregar alguna lógica adicional después de agregar el producto al carrito, como mostrar un mensaje de confirmación
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 16.dp, horizontal = 20.dp),
@@ -174,7 +180,7 @@ fun ProductDetailsScreen(
                     )
                 ) {
                     Text(
-                        text = "Buy Now",
+                        text = "Add to Cart",
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp

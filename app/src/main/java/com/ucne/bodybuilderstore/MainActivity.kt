@@ -8,10 +8,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,9 +47,9 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import androidx.navigation.navigation
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.RegistroProduct
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ProductosScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.accesorioScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ropaScreen
@@ -91,6 +89,9 @@ class MainActivity : ComponentActivity() {
                     }
                     composable("registro") {
                         RegistroProduct(navigateBack = {navController.navigateUp()})
+                    }
+                    composable("cart") {
+                        CartScreen(navigateBack = {navController.navigateUp()})
                     }
                     composable(
                         route = "detalle/{id}",
@@ -207,7 +208,7 @@ fun ScaffoldContent(
                     .fillMaxWidth(0.5f)
             ) {
                 DropdownMenuItem(
-                    onClick = { /* Handle menu item click */ },
+                    onClick = { navController.navigate("cart") },
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(

@@ -1,5 +1,6 @@
 package com.ucne.bodybuilderstore.ui.screens.registroScreen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
@@ -7,6 +8,7 @@ import com.ucne.bodybuilderstore.data.repository.StoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -26,6 +28,23 @@ class ProductViewModel @Inject constructor(
 
     fun getProductoById(id: Int): Flow<StoreEntity?> {
         return storeRepository.getProductoById(id)
+    }
+
+    private val _cartItems = MutableStateFlow<List<StoreEntity>>(emptyList())
+    val cartItems: StateFlow<List<StoreEntity>> = _cartItems
+
+    fun addToCart(item: StoreEntity) {
+        val updatedCart = _cartItems.value.toMutableList()
+        val existingIndex = updatedCart.indexOfFirst { it.id == item.id }
+
+        _cartItems.value = updatedCart
+    }
+
+    fun removeFromCart(item: StoreEntity) {
+        val updatedCart = _cartItems.value.toMutableList()
+        val existingIndex = updatedCart.indexOfFirst { it.id == item.id }
+
+        _cartItems.value = updatedCart
     }
 
     fun onEvent(event: StoreEvent) {
@@ -163,6 +182,18 @@ class ProductViewModel @Inject constructor(
                     storeRepository.delete(event.store)
                 }
             }
+
+            is StoreEvent.AddToCart -> {
+                viewModelScope.launch {
+                    addToCart(event.product)
+                }
+            }
+
+            is StoreEvent.RemoveFromCart -> {
+                viewModelScope.launch {
+                    removeFromCart(event.product)
+                }
+            }
         }
     }
 }
@@ -183,6 +214,8 @@ sealed interface StoreEvent {
     data class Imagen(val imagen: String) : StoreEvent
     data class TipoProducto(val tipo: String) : StoreEvent
     data class Delete(val store: StoreEntity) : StoreEvent
+    data class AddToCart(val product: StoreEntity) : StoreEvent
+    data class RemoveFromCart(val product: StoreEntity) : StoreEvent
     object onSave : StoreEvent
     object onNew : StoreEvent
 }

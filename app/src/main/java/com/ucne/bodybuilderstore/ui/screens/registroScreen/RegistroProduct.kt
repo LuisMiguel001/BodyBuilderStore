@@ -55,7 +55,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -106,8 +105,9 @@ fun RegistroProduct(
                         }
                         Text(
                             text = "Registro de Producto",
-                            textAlign = TextAlign.Start,
-                            color = Color.White
+                            color = Color.White,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
                         )
                     }
                 }

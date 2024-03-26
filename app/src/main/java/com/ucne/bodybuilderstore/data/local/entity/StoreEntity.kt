@@ -13,5 +13,4 @@ data class StoreEntity(
     val precio: Float = 0.0f,
     val imagen: String = "",
     val tipo: String = "",
-    val existencia: Int = 0
 )

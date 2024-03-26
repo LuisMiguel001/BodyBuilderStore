@@ -16,10 +16,13 @@ object AppModule {
     @Singleton
     @Provides
     fun providesPrioridadDatabase(@ApplicationContext appContext: Context): StoreDataBase =
-        Room.databaseBuilder(appContext,StoreDataBase::class.java, "Prioridad.db")
+        Room.databaseBuilder(appContext,StoreDataBase::class.java, "Store.db")
             .fallbackToDestructiveMigration()
             .build()
 
     @Provides
     fun providePrioridadDao(db: StoreDataBase) = db.storedao()
+
+    @Provides
+    fun provideCartDao(db: StoreDataBase) = db.cartDao()
 }
