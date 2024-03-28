@@ -119,9 +119,9 @@ fun RopaCard(
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "$${producto.precio}",
+                                text = String.format("%.2f", producto.precio),
                                 style = MaterialTheme.typography.titleSmall,
-                                color = myGreen
+                                color = Color.Blue
                             )
                         }
                         IconButton(

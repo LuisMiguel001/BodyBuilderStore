@@ -24,4 +24,12 @@ class CartRepository @Inject constructor(
     suspend fun clearCart() {
         cartDao.clearCart()
     }
+
+    suspend fun getCartItemByName(nombre: String): CartEntity? {
+        return cartDao.getCartItemByName(nombre)
+    }
+
+    suspend fun updateCartItemQuantity(itemId: Int, newQuantity: Int) {
+        cartDao.updateCartItemQuantity(itemId, newQuantity)
+    }
 }

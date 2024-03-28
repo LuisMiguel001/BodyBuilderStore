@@ -107,6 +107,14 @@ class ProductViewModel @Inject constructor(
                 }
             }
 
+            is StoreEvent.Existencia -> {
+                _state.update {
+                    it.copy(
+                        store = it.store.copy(existencia = event.existencia.toIntOrNull() ?: 0)
+                    )
+                }
+            }
+
             StoreEvent.onSave -> {
                 val nombre = state.value.store.nombre
                 val descripcion = state.value.store.descripcion
@@ -114,8 +122,10 @@ class ProductViewModel @Inject constructor(
                 val precio = state.value.store.precio
                 val imagen = state.value.store.imagen
                 val tipo = state.value.store.tipo
+                val existencia = state.value.store.existencia
 
-                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank() || imagen.isBlank() || precio == 0.0f || descripcion.isBlank()) {
+                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank()
+                    || imagen.isBlank() || precio == 0.0f || descripcion.isBlank() || existencia == 0) {
                     _state.update {
                         it.copy(
                             error = "Por favor, complete todos los campos."
@@ -130,7 +140,8 @@ class ProductViewModel @Inject constructor(
                     detalle = detalle,
                     precio = precio,
                     imagen = imagen,
-                    tipo = tipo
+                    tipo = tipo,
+                    existencia = existencia
                 )
 
                 _state.update {
@@ -213,6 +224,7 @@ sealed interface StoreEvent {
     data class Precio(val precio: String) : StoreEvent
     data class Imagen(val imagen: String) : StoreEvent
     data class TipoProducto(val tipo: String) : StoreEvent
+    data class Existencia(val existencia: String) : StoreEvent
     data class Delete(val store: StoreEntity) : StoreEvent
     data class AddToCart(val product: StoreEntity) : StoreEvent
     data class RemoveFromCart(val product: StoreEntity) : StoreEvent

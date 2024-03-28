@@ -23,7 +23,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
@@ -49,6 +51,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -91,24 +94,32 @@ fun RegistroProduct(
                     containerColor = Color.Blue
                 ),
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                    Row{
                         IconButton(
                             onClick = { navigateBack() }
                         ) {
                             Icon(
-                                imageVector = Icons.Default.ArrowBack,
-                                contentDescription = "Home",
-                                tint = Color.White
+                                imageVector = Icons.Default.KeyboardArrowLeft,
+                                contentDescription = "Back",
+                                tint = Color.Black,
+                                modifier = Modifier
+                                    .size(40.dp)
                             )
                         }
-                        Text(
-                            text = "Registro de Producto",
-                            color = Color.White,
-                            modifier = Modifier
-                                .align(Alignment.CenterVertically)
-                        )
+                        Spacer(modifier = Modifier.width(14.dp))
+                        Row {
+                            Icon(
+                                imageVector = Icons.Default.Create, contentDescription = "add", tint = Color.White,
+                                modifier = Modifier.rotate(268f)
+                            )
+                            Text(
+                                text = "Registro de Producto",
+                                color = Color.White,
+                                modifier = Modifier
+                                    .align(Alignment.CenterVertically)
+                            )
+                            Icon(imageVector = Icons.Default.Create, contentDescription = "add", tint = Color.White)
+                        }
                     }
                 }
             )
@@ -226,6 +237,19 @@ fun RegistroProduct(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
+            )
+
+            OutlinedTextField(
+                value = _state.existencia.toString(),
+                onValueChange = { viewModel.onEvent(StoreEvent.Existencia(it)) },
+                label = { Text(text = "Unidades Disponibles") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp),
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = androidx.compose.ui.text.input.ImeAction.Next
+                )
             )
 
             OutlinedTextField(

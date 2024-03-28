@@ -66,7 +66,6 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation("io.coil-kt:coil-compose:2.4.0")
-
     implementation(libs.androidx.biometric.ktx)
     implementation(libs.androidx.appcompat)
 
@@ -76,9 +75,9 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:$lifeCycleVersion")
 
     //Hilt
-    implementation("com.google.dagger:hilt-android:2.49")
-    ksp("com.google.dagger:hilt-android-compiler:2.48")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    ksp(libs.hilt.android.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
 
     //ROOM
     val room_version = "2.6.1"

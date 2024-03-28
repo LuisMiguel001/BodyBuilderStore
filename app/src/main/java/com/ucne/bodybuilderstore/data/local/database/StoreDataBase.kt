@@ -7,7 +7,7 @@ import com.ucne.bodybuilderstore.data.local.dao.StoreDao
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 
-@Database(entities = [StoreEntity::class, CartEntity::class], version = 5)
+@Database(entities = [StoreEntity::class, CartEntity::class], version = 6)
 abstract class StoreDataBase: RoomDatabase() {
     abstract fun storedao(): StoreDao
 

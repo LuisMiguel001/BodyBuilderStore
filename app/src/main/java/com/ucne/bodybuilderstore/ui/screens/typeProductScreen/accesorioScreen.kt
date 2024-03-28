@@ -76,7 +76,6 @@ fun AccesorioCard(
     onClick: () -> Unit
 ) {
     val painter: Painter = rememberImagePainter(data = producto.imagen)
-    val myGreen = Color(android.graphics.Color.parseColor("#00A42E"))
 
     Card(
         elevation = CardDefaults.cardElevation(10.dp),
@@ -119,9 +118,9 @@ fun AccesorioCard(
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text(
-                                text = "$${producto.precio}",
+                                text = String.format("%.2f", producto.precio),
                                 style = MaterialTheme.typography.titleSmall,
-                                color = myGreen
+                                color = Color.Blue
                             )
                         }
                         IconButton(
@@ -131,7 +130,7 @@ fun AccesorioCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                tint = androidx.compose.ui.graphics.Color.Red,
+                                tint = Color.Red,
                                 contentDescription = "Eliminar"
                             )
                         }

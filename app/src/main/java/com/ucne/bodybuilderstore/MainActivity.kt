@@ -37,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -99,7 +100,7 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val productId = backStackEntry.arguments?.getInt("id")
                         productId?.let { productId ->
-                            ProductDetailsScreen(navController, productId)
+                            ProductDetailsScreen(productId, navigateBack = {navController.navigateUp()})
                         }
                     }
                 }
@@ -120,12 +121,14 @@ fun ScaffoldContent(
     content: @Composable () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             Row(
                 modifier = Modifier
                     .height(115.dp)
-                    .background(Color.Blue),
+                    .background(Color.Blue)
+                    .padding(vertical = 8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { menuExpanded = true}) {
@@ -133,7 +136,9 @@ fun ScaffoldContent(
                         imageVector = Icons.Filled.Menu,
                         contentDescription = "Menu",
                         tint = Color.White,
-                        modifier = Modifier.padding(8.dp)
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(35.dp)
                     )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
@@ -146,7 +151,7 @@ fun ScaffoldContent(
                     placeholder = { Text("Search") },
                     shape = RoundedCornerShape(12.dp),
                     colors = TextFieldDefaults.textFieldColors(
-                        disabledTextColor = Color.Black,
+                        disabledTextColor = Color.LightGray,
                         cursorColor = Color.LightGray,
                         disabledLeadingIconColor = Color.White,
                         containerColor = Color.White,
@@ -157,7 +162,7 @@ fun ScaffoldContent(
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = "Search",
-                            tint = Color.LightGray
+                            tint = Color.Gray
                         )
                     }
                 )

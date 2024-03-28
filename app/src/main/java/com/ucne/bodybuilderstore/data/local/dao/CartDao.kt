@@ -20,4 +20,10 @@ interface CartDao {
 
     @Query("DELETE FROM table_cart")
     suspend fun clearCart()
+
+    @Query("SELECT * FROM table_cart WHERE nombre = :nombre LIMIT 1")
+    suspend fun getCartItemByName(nombre: String): CartEntity?
+
+    @Query("UPDATE table_cart SET cantidad = :newQuantity WHERE id = :itemId")
+    suspend fun updateCartItemQuantity(itemId: Int, newQuantity: Int)
 }
