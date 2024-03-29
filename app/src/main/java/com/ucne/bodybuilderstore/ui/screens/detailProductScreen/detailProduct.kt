@@ -3,6 +3,7 @@ package com.ucne.bodybuilderstore.ui.screens.detailProductScreen
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -45,13 +48,16 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.R
+import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartViewModel
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
 import kotlinx.coroutines.delay
@@ -64,13 +70,15 @@ fun ProductDetailsScreen(
     productId: Int,
     viewModel: ProductViewModel = hiltViewModel(),
     viewModelC: CartViewModel = hiltViewModel(),
-    navigateBack: () -> Unit
+    navigateBack: () -> Unit,
+    navController: NavController
 ) {
     val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
     val painter: Painter = rememberImagePainter(data = producto?.imagen)
     val myGreen = Color(android.graphics.Color.parseColor("#00A42E"))
     var productAddedToCart by remember { mutableStateOf(false) }
     val state by viewModelC.state.collectAsStateWithLifecycle()
+    val productosSimilares by viewModel.getProductosByType(producto?.tipo ?: "").collectAsState(initial = emptyList())
 
     Column(
         modifier = Modifier
@@ -275,9 +283,71 @@ fun ProductDetailsScreen(
                 }
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
+        Text(
+            text = "Productos relacionados",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(start = 16.dp)
+        )
+        LazyRow(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 18.dp, end = 13.dp)
+        ) {
+            items(productosSimilares) { producto ->
+                SuggestedProductCard(
+                    producto = producto,
+                    onClick = { navController.navigate("detalle/${producto.id}") }
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(25.dp))
     }
     state.MessageSucces?.let {
         MessageCard(message = it, color = Color.Blue)
+    }
+}
+
+@Composable
+fun SuggestedProductCard(
+    producto: StoreEntity,
+    onClick: () -> Unit
+) {
+    val painter: Painter = rememberImagePainter(data = producto.imagen)
+
+    Card(
+        elevation = CardDefaults.cardElevation(8.dp),
+        modifier = Modifier
+            .padding(start = 8.dp)
+    ) {
+        Column(
+            modifier = Modifier
+                .width(150.dp)
+                .padding(8.dp)
+                .clickable { onClick() }
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(MaterialTheme.shapes.medium)
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = producto.nombre,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.Bold,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = String.format("%.2f", producto.precio),
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.Blue
+            )
+        }
     }
 }
 

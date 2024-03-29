@@ -62,7 +62,8 @@ fun ProductosScreen(
             items(productos) { producto ->
                 SuplemetoCard(producto = producto,
                     onDeleteClick = {viewModel.onEvent(StoreEvent.Delete(producto))},
-                    onClick = { navController.navigate("detalle/${producto.id}") })
+                    onClick = { navController.navigate("detalle/${producto.id}") }
+                )
             }
         }
         Spacer(modifier = Modifier.height(1000.dp))

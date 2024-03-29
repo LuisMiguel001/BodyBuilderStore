@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
                     ) { backStackEntry ->
                         val productId = backStackEntry.arguments?.getInt("id")
                         productId?.let { productId ->
-                            ProductDetailsScreen(productId, navigateBack = {navController.navigateUp()})
+                            ProductDetailsScreen(productId, navigateBack = {navController.navigateUp()}, navController = navController)
                         }
                     }
                 }

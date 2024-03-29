@@ -78,7 +78,7 @@ fun RegistroProduct(
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
-            val filePath = uri?.let { FileUtil.from(context, it) }
+            val filePath = uri?.let { FileUtil.saveImage(context, it) }
             filePath?.let { StoreEvent.Imagen(it) }?.let { viewModel.onEvent(it) }
         }
 
@@ -174,7 +174,7 @@ fun RegistroProduct(
             OutlinedTextField(
                 value = _state.nombre,
                 onValueChange = { viewModel.onEvent(StoreEvent.Nombre(it)) },
-                label = { Text(text = "Marca") },
+                label = { Text(text = "Nombre") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
@@ -357,3 +357,4 @@ fun MessageCard(
         }
     }
 }
+

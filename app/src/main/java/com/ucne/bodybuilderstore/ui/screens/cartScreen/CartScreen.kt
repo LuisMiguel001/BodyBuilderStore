@@ -1,5 +1,9 @@
 package com.ucne.bodybuilderstore.ui.screens.cartScreen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,11 +32,17 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DismissDirection
+import androidx.compose.material3.DismissState
+import androidx.compose.material3.DismissValue
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -102,57 +112,62 @@ fun CartScreen(
 
         if (cartItems.isEmpty()) {
             Text(
-                text = "Your cart is empty",
+                text = "Tu Carrito de BodyBuilder Store está vacío",
                 style = MaterialTheme.typography.titleMedium
             )
         } else {
             LazyColumn {
-                items(cartItems + listOf(null)) { item ->
-                    if (item != null) {
-                        CartItemRow(
-                            item = item,
-                            onDeleteClicked = { viewModelC.removeCartItem(item.id) },
-                            onIncreaseClicked = {
-                                viewModelC.addToCart(
-                                    item.imagen,
-                                    item.nombre,
-                                    item.precio,
-                                    1
-                                )
-                            },
-                            onDecreaseClicked = {
-                                viewModelC.addToCart(
-                                    item.imagen,
-                                    item.nombre,
-                                    item.precio,
-                                    -1
-                                )
-                            }
-                        )
-                    } else {
-                        Button(
-                            onClick = { viewModel.clearCart() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            shape = RoundedCornerShape(8.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = Color.Red,
-                                contentColor = Color.White
-                            )
-                        ) {
-                            Text(
-                                text = "Clear Cart",
-                                style = TextStyle(
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 18.sp
-                                )
+                items(cartItems) { item ->
+                    SwipeToDeleteContainer(
+                        item = item,
+                        onDelete = { deletedItem -> viewModelC.removeCartItem(deletedItem.id) },
+                        onClick = { /* handle item click */ },
+                        content = { item ->
+                            CartItemRow(
+                                item = item,
+                                onIncreaseClicked = {
+                                    viewModelC.addToCart(
+                                        item.imagen,
+                                        item.nombre,
+                                        item.precio,
+                                        1
+                                    )
+                                },
+                                onDecreaseClicked = {
+                                    viewModelC.addToCart(
+                                        item.imagen,
+                                        item.nombre,
+                                        item.precio,
+                                        -1
+                                    )
+                                }
                             )
                         }
-                    }
+                    )
                 }
             }
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = { viewModel.clearCart() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                shape = RoundedCornerShape(8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Red,
+                    contentColor = Color.White
+                )
+            ) {
+                Text(
+                    text = "Clear Cart",
+                    style = TextStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+                )
+            }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Order Summary",
@@ -198,7 +213,6 @@ fun CartScreen(
 @Composable
 fun CartItemRow(
     item: CartEntity,
-    onDeleteClicked: () -> Unit,
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit
 ) {
@@ -247,7 +261,11 @@ fun CartItemRow(
                         .size(30.dp)
                         .clip(CircleShape)
                         .background(Color.White)
-                        .clickable { onDecreaseClicked() },
+                        .clickable {
+                            if (item.cantidad > 1) {
+                                onDecreaseClicked()
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
@@ -287,15 +305,87 @@ fun CartItemRow(
                     }
                 }
             }
+        }
+    }
+}
 
-            Spacer(modifier = Modifier.width(16.dp))
 
-            IconButton(
-                onClick = onDeleteClicked
-            ) {
-                Icon(Icons.Default.Delete, contentDescription = "Remove from Cart")
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SwipeToDeleteContainer(
+    item: CartEntity,
+    onDelete: (CartEntity) -> Unit,
+    onClick: () -> Unit,
+    animationDuration: Int = 500,
+    content: @Composable (CartEntity) -> Unit
+) {
+    var isRemoved by remember {
+        mutableStateOf(false)
+    }
+    val state = rememberDismissState(
+        confirmValueChange = { value ->
+            if (value == DismissValue.DismissedToStart) {
+                isRemoved = true
+                true
+            } else {
+                false
             }
         }
+    )
+
+    LaunchedEffect(key1 = isRemoved) {
+        if (isRemoved) {
+            delay(animationDuration.toLong())
+            onDelete(item)
+        }
+    }
+
+    AnimatedVisibility(
+        visible = !isRemoved,
+        exit = shrinkVertically(
+            animationSpec = tween(durationMillis = animationDuration),
+            shrinkTowards = Alignment.Top
+        ) + fadeOut()
+    ) {
+        SwipeToDismiss(
+            state = state,
+            background = {
+                DeleteBackground(swipeDismissState = state)
+            },
+            dismissContent = {
+                Box(
+                    modifier = Modifier
+                        .clickable { onClick() }
+                ) {
+                    content(item)
+                }
+            },
+            directions = setOf(DismissDirection.EndToStart)
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeleteBackground(
+    swipeDismissState: DismissState
+) {
+    val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart) {
+        Color.Red
+    } else Color.Transparent
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color)
+            .padding(16.dp),
+        contentAlignment = Alignment.CenterEnd
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = null,
+            tint = Color.White
+        )
     }
 }
 
@@ -340,7 +430,7 @@ fun OrderSummary(
             )
             Spacer(modifier = Modifier.width(256.dp))
             Text(
-                text = String.format("$%.2f",totalPrice),
+                text = String.format("$%.2f", totalPrice),
                 fontWeight = FontWeight.Bold,
                 color = Color.Black
             )
