@@ -283,6 +283,7 @@ fun ProductDetailsScreen(
                 }
             }
         }
+
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Productos relacionados",

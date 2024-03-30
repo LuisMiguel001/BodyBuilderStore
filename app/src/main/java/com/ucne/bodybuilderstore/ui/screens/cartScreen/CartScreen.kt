@@ -7,7 +7,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -35,13 +35,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.DismissState
 import androidx.compose.material3.DismissValue
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
 import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -54,16 +57,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.LocationForm
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.PaymentMethodForm
 import kotlinx.coroutines.delay
 
 @Composable
@@ -77,13 +85,14 @@ fun CartScreen(
     val totalItemsInCart = viewModel.getTotalItemsInCart()
     val totalProductsCount = viewModel.getTotalProductsCount()
     val totalPrice = viewModel.getTotalPrice()
+    var isLocationFormVisible by remember { mutableStateOf(false) }
+    var isPaymentMethodFormVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         Row {
             IconButton(
                 onClick = { navigateBack() }
@@ -92,8 +101,7 @@ fun CartScreen(
                     imageVector = Icons.Default.ArrowBack,
                     contentDescription = "Back",
                     tint = Color.Black,
-                    modifier = Modifier
-                        .size(30.dp)
+                    modifier = Modifier.size(30.dp)
                 )
             }
             Spacer(modifier = Modifier.width(95.dp))
@@ -145,60 +153,108 @@ fun CartScreen(
                         }
                     )
                 }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = { viewModel.clearCart() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
-                )
-            ) {
-                Text(
-                    text = "Clear Cart",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
-                )
-            }
-        }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { viewModel.clearCart() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "Clear Cart",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
 
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Order Summary",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-        )
-        Card {
-            OrderSummary(
-                totalItemsInCart = totalItemsInCart,
-                totalProductsCount = totalProductsCount,
-                totalPrice = totalPrice
-            )
-        }
-        Button(
-            onClick = { /* Lógica para realizar el pedido */ },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            shape = RoundedCornerShape(8.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Blue,
-                contentColor = Color.White
-            )
-        ) {
-            Text(
-                text = "Order Now",
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 18.sp
-                )
-            )
+                    Text(
+                        text = "Order Summary",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    Card {
+                        OrderSummary(
+                            totalItemsInCart = totalItemsInCart,
+                            totalProductsCount = totalProductsCount,
+                            totalPrice = totalPrice
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    if (isLocationFormVisible) {
+                        LocationForm(
+                            onDismiss = { isLocationFormVisible = false }
+                        )
+                    }
+
+                    if (isPaymentMethodFormVisible) {
+                        PaymentMethodForm(
+                            onDismiss = { isPaymentMethodFormVisible = false }
+                        )
+                    }
+                    Text(
+                        text = "Información",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                    )
+                    InformationCard(
+                        onLocation = {
+                            IconButton(
+                                onClick = {
+                                    isLocationFormVisible = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowRight,
+                                    contentDescription = "More details"
+                                )
+                            }
+                        },
+                        onPaymentMethod = {
+                            IconButton(
+                                onClick = {
+                                    isPaymentMethodFormVisible = true
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.KeyboardArrowRight,
+                                    contentDescription = "More details"
+                                )
+                            }
+                        }
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Button(
+                        onClick = { /* Lógica para realizar el pedido */ },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 16.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Blue,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text(
+                            text = "Order Now",
+                            style = TextStyle(
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 18.sp
+                            )
+                        )
+                    }
+                }
+            }
         }
     }
     state.MessageSucces?.let {
@@ -209,6 +265,7 @@ fun CartScreen(
         MessageCard(message = it, color = Color.Red)
     }
 }
+
 
 @Composable
 fun CartItemRow(
@@ -309,7 +366,6 @@ fun CartItemRow(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SwipeToDeleteContainer(
@@ -319,14 +375,16 @@ fun SwipeToDeleteContainer(
     animationDuration: Int = 500,
     content: @Composable (CartEntity) -> Unit
 ) {
-    var isRemoved by remember {
-        mutableStateOf(false)
-    }
+    var isRemoved by remember { mutableStateOf(false) }
+    var showUndoSnackbar by remember { mutableStateOf(false) }
+    var removedProductName by remember { mutableStateOf("") }
+
     val state = rememberDismissState(
         confirmValueChange = { value ->
             if (value == DismissValue.DismissedToStart) {
-                isRemoved = true
-                true
+                showUndoSnackbar = true
+                removedProductName = item.nombre
+                false
             } else {
                 false
             }
@@ -363,6 +421,51 @@ fun SwipeToDeleteContainer(
             directions = setOf(DismissDirection.EndToStart)
         )
     }
+
+    if (showUndoSnackbar) {
+        LaunchedEffect(Unit) {
+            delay(2000L)
+            showUndoSnackbar = false
+            onDelete(item)
+        }
+        Snackbar(
+            modifier = Modifier
+                .padding(6.dp),
+            action = {
+                TextButton(
+                    onClick = {
+                        showUndoSnackbar = false
+                    }
+                ) {
+                    Row {
+                        Image(
+                            painter = rememberAsyncImagePainter(R.drawable.icons8_undo_64),
+                            contentDescription = "Undo",
+                            modifier = Modifier
+                                .size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(3.dp))
+                        Text("UNDO")
+                    }
+                }
+            }
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.LightGray
+                        )
+                    ) {
+                        append("'${removedProductName}'")
+                    }
+                    withStyle(style = SpanStyle(color = Color.Red)) {
+                        append("Se Eliminara")
+                    }
+                },
+            )
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -395,45 +498,92 @@ fun OrderSummary(
     totalProductsCount: Int,
     totalPrice: Float
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 6.dp)
-    ) {
-        Row {
-            Text(text = "Total Items in Cart:", fontWeight = FontWeight.Medium)
-            Spacer(modifier = Modifier.width(185.dp))
-            Text(text = "$totalItemsInCart")
+    Card {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
+        ) {
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(text = "Total Items in Cart:", fontWeight = FontWeight.Medium)
+                Spacer(modifier = Modifier.width(185.dp))
+                Text(text = "$totalItemsInCart")
+            }
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(text = "Total Products Count:", fontWeight = FontWeight.Medium)
+                Spacer(modifier = Modifier.width(163.dp))
+                Text(text = "$totalProductsCount")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(color = Color.Gray, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.padding(8.dp)
+            ) {
+                Text(
+                    text = "Total:",
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+                Spacer(modifier = Modifier.width(256.dp))
+                Text(
+                    text = String.format("$%.2f", totalPrice),
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                )
+            }
         }
-        Row {
-            Text(text = "Total Products Count:", fontWeight = FontWeight.Medium)
-            Spacer(modifier = Modifier.width(163.dp))
-            Text(text = "$totalProductsCount")
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row(modifier = Modifier.fillMaxWidth()) {
-            Spacer(modifier = Modifier.weight(1f))
-            Box(
+    }
+}
+
+@Composable
+fun InformationCard(
+    onLocation: @Composable () -> Unit,
+    onPaymentMethod: @Composable () -> Unit
+) {
+    Card {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Color.LightGray)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .height(1.dp)
-                    .width(400.dp)
-                    .background(color = Color.Black)
-            )
-            Spacer(modifier = Modifier.weight(1f))
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        Row {
-            Text(
-                text = "Total:",
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-            Spacer(modifier = Modifier.width(256.dp))
-            Text(
-                text = String.format("$%.2f", totalPrice),
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Location:",
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                onLocation()
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+            Divider(color = Color.Gray, thickness = 1.dp)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = "Payment Method:",
+                    fontWeight = FontWeight.Medium
+                )
+                Spacer(modifier = Modifier.weight(1f))
+                onPaymentMethod()
+            }
         }
     }
 }
