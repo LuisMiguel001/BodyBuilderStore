@@ -1,15 +1,9 @@
 package com.ucne.bodybuilderstore.ui.screens.cartScreen
 
-import android.app.NotificationManager
-import android.content.Context
-import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
 import com.ucne.bodybuilderstore.data.repository.CartRepository
-import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,13 +35,13 @@ class CartViewModel @Inject constructor(
             }
         }
     }
-    fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int) {
+    fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int, payId: Int) {
         viewModelScope.launch {
             val existingItem = cartRepository.getCartItemByName(nombre)
             if (existingItem != null) {
                 cartRepository.updateCartItemQuantity(existingItem.id, existingItem.cantidad + cantidad)
             } else {
-                cartRepository.addToCart(imagen, nombre, precio, cantidad)
+                cartRepository.addToCart(imagen, nombre, precio, cantidad, locationId, payId)
             }
 
             _state.update {
@@ -68,9 +62,9 @@ class CartViewModel @Inject constructor(
         }
     }
 
-    fun clearCart() {
+    fun clearAll() {
         viewModelScope.launch {
-            cartRepository.clearCart()
+            cartRepository.clearAll()
             _state.update {
                 it.copy(
                     info = "Se limpio el carrito"
@@ -96,4 +90,5 @@ data class StateCart(
     val info: String? = null,
     val MessageSucces: String? = null
 )
+
 

@@ -21,6 +21,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +31,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ucne.bodybuilderstore.data.local.entity.Location
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartViewModel
+import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
 
 @Composable
 fun LocationForm(
-    onDismiss: () -> Unit
+    location: Location,
+    onDismiss: () -> Unit,
+    viewModel: LocationViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val _state = state.location
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -78,63 +89,63 @@ fun LocationForm(
             Divider(color = Color.DarkGray, thickness = 1.dp)
 
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.address,
+                onValueChange = { viewModel.onEvent(LocationEvent.Address(it)) },
                 label = { Text("Dirección") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.city,
+                onValueChange = { viewModel.onEvent(LocationEvent.City(it)) },
                 label = { Text("Ciudad") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.state,
+                onValueChange = { viewModel.onEvent(LocationEvent.State(it)) },
                 label = { Text("Estado/Provincia") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.postalCode,
+                onValueChange = { viewModel.onEvent(LocationEvent.PostalCode(it)) },
                 label = { Text("Código Postal") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.country,
+                onValueChange = { viewModel.onEvent(LocationEvent.Country(it)) },
                 label = { Text("País") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.gpsCoordinates,
+                onValueChange = { viewModel.onEvent(LocationEvent.GpsCoordinates(it)) },
                 label = { Text("Coordenadas GPS") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = TextFieldValue(),
-                onValueChange = { /*TODO*/ },
+                value = _state.additionalNotes,
+                onValueChange = { viewModel.onEvent(LocationEvent.AdditionalNotes(it)) },
                 label = { Text("Referencias adicionales") },
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = onDismiss,
+                onClick = {viewModel.onEvent(LocationEvent.onSave)},
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
@@ -146,7 +157,7 @@ fun LocationForm(
                 shape = ShapeDefaults.Small
             ) {
                 Row {
-                    Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "Check")
+                    Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "Save")
                     Text("Save")
                 }
             }

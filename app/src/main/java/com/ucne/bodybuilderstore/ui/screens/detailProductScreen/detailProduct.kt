@@ -258,7 +258,9 @@ fun ProductDetailsScreen(
                                 imagen = it.imagen,
                                 nombre = it.nombre,
                                 precio = it.precio,
-                                cantidad = 1
+                                cantidad = 1,
+                                locationId = it.id,
+                                payId = it.id
                             )
                         }
                         productAddedToCart = true

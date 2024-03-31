@@ -5,9 +5,11 @@ import androidx.room.RoomDatabase
 import com.ucne.bodybuilderstore.data.local.dao.CartDao
 import com.ucne.bodybuilderstore.data.local.dao.StoreDao
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
+import com.ucne.bodybuilderstore.data.local.entity.Location
+import com.ucne.bodybuilderstore.data.local.entity.PaymentMethod
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 
-@Database(entities = [StoreEntity::class, CartEntity::class], version = 6)
+@Database(entities = [StoreEntity::class, CartEntity::class, Location::class, PaymentMethod::class], version = 8)
 abstract class StoreDataBase: RoomDatabase() {
     abstract fun storedao(): StoreDao
 

@@ -19,10 +19,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
@@ -70,23 +68,31 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
+import com.ucne.bodybuilderstore.data.local.entity.Location
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.LocationForm
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.LocationViewModel
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.PaymentMethodForm
+import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
 import kotlinx.coroutines.delay
 
 @Composable
 fun CartScreen(
-    viewModel: CartViewModel = hiltViewModel(),
+    viewModel: ProductViewModel = hiltViewModel(),
     viewModelC: CartViewModel = hiltViewModel(),
-    navigateBack: () -> Unit
+    viewModelL: LocationViewModel = hiltViewModel(),
+    navigateBack: () -> Unit,
 ) {
     val state by viewModelC.state.collectAsStateWithLifecycle()
-    val cartItems by viewModel.cartItems.collectAsState(initial = emptyList())
-    val totalItemsInCart = viewModel.getTotalItemsInCart()
-    val totalProductsCount = viewModel.getTotalProductsCount()
-    val totalPrice = viewModel.getTotalPrice()
+    val cartItems by viewModelC.cartItems.collectAsState(initial = emptyList())
+    val totalItemsInCart = viewModelC.getTotalItemsInCart()
+    val totalProductsCount = viewModelC.getTotalProductsCount()
+    val totalPrice = viewModelC.getTotalPrice()
     var isLocationFormVisible by remember { mutableStateOf(false) }
     var isPaymentMethodFormVisible by remember { mutableStateOf(false) }
+
+    val locationState by viewModelL.state.collectAsState()
+    val cartLocationId = cartItems.firstOrNull()?.locationId ?: 0
+    val cartLocation = viewModelL.getLocationById(cartLocationId).collectAsState(initial = null).value
 
     Column(
         modifier = Modifier
@@ -138,7 +144,9 @@ fun CartScreen(
                                         item.imagen,
                                         item.nombre,
                                         item.precio,
-                                        1
+                                        1,
+                                        item.locationId,
+                                        item.paymentMethodId
                                     )
                                 },
                                 onDecreaseClicked = {
@@ -146,7 +154,9 @@ fun CartScreen(
                                         item.imagen,
                                         item.nombre,
                                         item.precio,
-                                        -1
+                                        -1,
+                                        item.locationId,
+                                        item.paymentMethodId
                                     )
                                 }
                             )
@@ -156,7 +166,7 @@ fun CartScreen(
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { viewModel.clearCart() },
+                        onClick = { viewModelC.clearAll() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 8.dp),
@@ -192,6 +202,7 @@ fun CartScreen(
 
                     if (isLocationFormVisible) {
                         LocationForm(
+                            location = Location(),
                             onDismiss = { isLocationFormVisible = false }
                         )
                     }
@@ -201,12 +212,15 @@ fun CartScreen(
                             onDismiss = { isPaymentMethodFormVisible = false }
                         )
                     }
+
                     Text(
-                        text = "Información",
+                        text = "Information",
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                     )
+
                     InformationCard(
+                        location = cartLocation,
                         onLocation = {
                             IconButton(
                                 onClick = {
@@ -230,12 +244,12 @@ fun CartScreen(
                                     contentDescription = "More details"
                                 )
                             }
-                        }
+                        },
                     )
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { /* Lógica para realizar el pedido */ },
+                        onClick = { viewModel.placeOrder(cartItems) }, // Llama al método en el ViewModel
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
@@ -544,8 +558,9 @@ fun OrderSummary(
 
 @Composable
 fun InformationCard(
+    location: Location?,
     onLocation: @Composable () -> Unit,
-    onPaymentMethod: @Composable () -> Unit
+    onPaymentMethod: @Composable () -> Unit,
 ) {
     Card {
         Column(
@@ -560,9 +575,14 @@ fun InformationCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Location:",
+                    text = "Location: ",
                     fontWeight = FontWeight.Medium
                 )
+                if (location != null) {
+                    Text(text = location.address, fontWeight = FontWeight.Bold, color = Color.Black)
+                } else {
+                    Text(text = "No hay dirección")
+                }
                 Spacer(modifier = Modifier.weight(1f))
                 onLocation()
             }
