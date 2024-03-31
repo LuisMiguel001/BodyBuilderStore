@@ -23,7 +23,4 @@ interface StoreDao {
 
     @Query("SELECT * FROM table_store WHERE tipo = :type")
     fun getByType(type: String): Flow<List<StoreEntity>>
-
-    @Query("UPDATE table_store SET existencia = existencia - :quantity WHERE id = :productId")
-    suspend fun updateExistence(productId: Int, quantity: Int)
 }

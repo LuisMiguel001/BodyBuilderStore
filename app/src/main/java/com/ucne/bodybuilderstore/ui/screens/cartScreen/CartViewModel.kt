@@ -35,13 +35,13 @@ class CartViewModel @Inject constructor(
             }
         }
     }
-    fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int, payId: Int) {
+    fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int,payId: Int, existencia: Int) {
         viewModelScope.launch {
             val existingItem = cartRepository.getCartItemByName(nombre)
             if (existingItem != null) {
                 cartRepository.updateCartItemQuantity(existingItem.id, existingItem.cantidad + cantidad)
             } else {
-                cartRepository.addToCart(imagen, nombre, precio, cantidad, locationId, payId)
+                cartRepository.addToCart(imagen, nombre, precio, cantidad, locationId, payId, existencia)
             }
 
             _state.update {
@@ -49,6 +49,12 @@ class CartViewModel @Inject constructor(
                     MessageSucces = "Se agrego al carrito"
                 )
             }
+        }
+    }
+
+    fun updateCartItemExistence(itemId: Int, newExistence: Int) {
+        viewModelScope.launch {
+            cartRepository.updateCartItemExistence(itemId, newExistence)
         }
     }
 

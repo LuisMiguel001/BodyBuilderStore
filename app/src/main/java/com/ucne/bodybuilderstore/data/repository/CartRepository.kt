@@ -4,15 +4,20 @@ import com.ucne.bodybuilderstore.data.local.dao.CartDao
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
 import com.ucne.bodybuilderstore.data.local.entity.Location
 import com.ucne.bodybuilderstore.data.local.entity.PaymentMethod
+import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class CartRepository @Inject constructor(
     private val cartDao: CartDao
 ) {
-    suspend fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int, payId: Int) {
-        val item = CartEntity(imagen = imagen, nombre = nombre, precio = precio, cantidad = cantidad, locationId = locationId, paymentMethodId = payId)
+    suspend fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int, payId: Int, existencia: Int) {
+        val item = CartEntity(imagen = imagen, nombre = nombre, precio = precio, cantidad = cantidad, locationId = locationId, paymentMethodId = payId, existencia = existencia)
         cartDao.insertOrUpdate(item)
+    }
+
+    suspend fun updateCartItemExistence(itemId: Int, newExistence: Int) {
+        cartDao.updateCartItemExistence(itemId, newExistence)
     }
 
     fun getAllCartItems(): Flow<List<CartEntity>> {

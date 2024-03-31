@@ -2,24 +2,20 @@ package com.ucne.bodybuilderstore.ui.screens.registroScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ucne.bodybuilderstore.data.local.entity.CartEntity
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
-import com.ucne.bodybuilderstore.data.repository.CartRepository
 import com.ucne.bodybuilderstore.data.repository.StoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ProductViewModel @Inject constructor(
-    private val storeRepository: StoreRepository,
-    private val cartRepository: CartRepository
+    private val storeRepository: StoreRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(StoreState())
     val state = _state.asStateFlow()
@@ -49,42 +45,6 @@ class ProductViewModel @Inject constructor(
 
         _cartItems.value = updatedCart
     }
-    fun placeOrder(cartItems: List<CartEntity>) {
-        viewModelScope.launch {
-            try {
-                // Realiza la lógica para realizar el pedido (puedes enviar los detalles del pedido al servidor, por ejemplo)
-
-                // Reducir la existencia de los productos en la base de datos local
-                cartItems.forEach { item ->
-                    val product = storeRepository.getProductoById(item.id).firstOrNull()
-                    if (product != null) {
-                        val updatedProduct = product.copy(existencia = product.existencia - item.cantidad)
-                        storeRepository.upsert(updatedProduct)
-                    }
-                }
-
-                // Limpiar el carrito después de realizar el pedido
-                clearAll()
-
-                // Mostrar un mensaje de éxito
-                _state.value = _state.value.copy(succesMessage = "Pedido realizado exitosamente.")
-            } catch (e: Exception) {
-                // Manejar errores
-                _state.value = _state.value.copy(error = "Error al realizar el pedido: ${e.message}")
-            }
-        }
-    }
-    fun clearAll() {
-        viewModelScope.launch {
-            cartRepository.clearAll()
-            _state.update {
-                it.copy(
-                    error = "Se limpio el carrito"
-                )
-            }
-        }
-    }
-
 
     fun onEvent(event: StoreEvent) {
         when (event) {

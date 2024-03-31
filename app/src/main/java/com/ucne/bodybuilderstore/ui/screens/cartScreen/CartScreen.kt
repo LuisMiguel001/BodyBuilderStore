@@ -146,7 +146,8 @@ fun CartScreen(
                                         item.precio,
                                         1,
                                         item.locationId,
-                                        item.paymentMethodId
+                                        item.paymentMethodId,
+                                        item.existencia
                                     )
                                 },
                                 onDecreaseClicked = {
@@ -156,7 +157,8 @@ fun CartScreen(
                                         item.precio,
                                         -1,
                                         item.locationId,
-                                        item.paymentMethodId
+                                        item.paymentMethodId,
+                                        item.existencia
                                     )
                                 }
                             )
@@ -249,7 +251,7 @@ fun CartScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { viewModel.placeOrder(cartItems) }, // Llama al método en el ViewModel
+                        onClick = { /**/},
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
@@ -267,6 +269,7 @@ fun CartScreen(
                             )
                         )
                     }
+
                 }
             }
         }

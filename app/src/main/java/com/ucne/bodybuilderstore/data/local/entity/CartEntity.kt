@@ -13,6 +13,7 @@ data class CartEntity(
     val nombre: String,
     val precio: Float,
     val cantidad: Int,
+    val existencia: Int,
     val locationId: Int,
     val paymentMethodId: Int
 )
