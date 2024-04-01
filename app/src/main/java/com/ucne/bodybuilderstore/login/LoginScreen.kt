@@ -29,6 +29,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -45,6 +46,7 @@ fun LoginScreen(
     val showLoginForm = rememberSaveable {
         mutableStateOf(true)
     }
+    val errorMessage = remember { mutableStateOf("") }
     Surface(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -58,9 +60,11 @@ fun LoginScreen(
                     isCreateAccount = false
                 ) { email, password ->
                     Log.d("BodyBuilder", "Logueajjjndo con $email y $password")
-                    viewModel.signInWithEmailAndPssword(email, password){
+                    viewModel.signInWithEmailAndPssword(email, password, {
                         navController.navigate("suplemento")
-                    }
+                    }, { error ->
+                        errorMessage.value = error
+                    })
                 }
             } else {
                 Text(text = "Crea una cuenta")
@@ -73,6 +77,14 @@ fun LoginScreen(
                     }
                 }
             }
+            if (errorMessage.value.isNotBlank()) {
+                Text(
+                    text = errorMessage.value,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = Color.Red
+                )
+            }
+
             Spacer(modifier = Modifier.height(15.dp))
             Row (
                 horizontalArrangement = Arrangement.Center,
@@ -80,7 +92,7 @@ fun LoginScreen(
             ){
                 val text1 =
                     if(showLoginForm.value) "No tienes cuenta?"
-                else "Ya tienes cuente?"
+                else "Ya tienes cuenta?"
                 val text2 =
                     if(showLoginForm.value) "Registrate"
                 else "Iniciar sesión"

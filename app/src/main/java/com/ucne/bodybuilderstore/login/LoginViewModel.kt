@@ -18,25 +18,28 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
     private val _loading = MutableLiveData(false)
 
-    fun signInWithEmailAndPssword(email: String, password: String, onLoginSuccess: () -> Unit) =
-        viewModelScope.launch {
-            try {
-                auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d("BodyBuilder", "signInWithEmailAndPssword logueando!!")
-                            onLoginSuccess()
-                        } else {
-                            Log.d(
-                                "BodyBuilder",
-                                "signInWithEmailAndPssword: ${task.result.toString()}"
-                            )
-                        }
+    fun signInWithEmailAndPssword(
+        email: String,
+        password: String,
+        onLoginSuccess: () -> Unit,
+        onLoginFailed: (String) -> Unit
+    ) = viewModelScope.launch {
+        try {
+            auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("BodyBuilder", "signInWithEmailAndPssword logueando!!")
+                        onLoginSuccess()
+                    } else {
+                        Log.d("BodyBuilder", "signInWithEmailAndPssword: ${task.exception}")
+                        onLoginFailed("Credenciales incorrectas. Por favor, inténtalo de nuevo.")
                     }
-            } catch (ex: Exception) {
-                Log.d("BodyBuilder", "signInWithEmailAndPssword: ${ex.message}")
-            }
+                }
+        } catch (ex: Exception) {
+            Log.d("BodyBuilder", "signInWithEmailAndPssword: ${ex.message}")
+            onLoginFailed("Ha ocurrido un error. Por favor, inténtalo de nuevo.")
         }
+    }
 
     fun createUserWithEmailAndPassword(
         email: String,
