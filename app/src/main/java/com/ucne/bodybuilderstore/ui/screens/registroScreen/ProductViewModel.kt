@@ -192,18 +192,6 @@ class ProductViewModel @Inject constructor(
                     storeRepository.delete(event.store)
                 }
             }
-
-            is StoreEvent.AddToCart -> {
-                viewModelScope.launch {
-                    addToCart(event.product)
-                }
-            }
-
-            is StoreEvent.RemoveFromCart -> {
-                viewModelScope.launch {
-                    removeFromCart(event.product)
-                }
-            }
         }
     }
 }
@@ -225,8 +213,6 @@ sealed interface StoreEvent {
     data class TipoProducto(val tipo: String) : StoreEvent
     data class Existencia(val existencia: String) : StoreEvent
     data class Delete(val store: StoreEntity) : StoreEvent
-    data class AddToCart(val product: StoreEntity) : StoreEvent
-    data class RemoveFromCart(val product: StoreEntity) : StoreEvent
     object onSave : StoreEvent
     object onNew : StoreEvent
 }

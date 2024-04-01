@@ -4,6 +4,7 @@ plugins {
     id("com.google.devtools.ksp")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -63,9 +64,15 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    //Firebase
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
+    implementation("com.google.firebase:firebase-auth-ktx")
+    implementation("com.google.firebase:firebase-firestore-ktx")
+
     implementation(libs.androidx.navigation.compose)
 
-    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation(libs.androidx.material)
+    implementation(libs.coil.compose)
     implementation(libs.androidx.biometric.ktx)
     implementation(libs.androidx.appcompat)
 

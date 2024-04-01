@@ -48,6 +48,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.ucne.bodybuilderstore.login.LoginScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.RegistroProduct
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartScreen
@@ -71,8 +72,11 @@ class MainActivity : ComponentActivity() {
 
                 NavHost(
                     navController = navController,
-                    startDestination = "suplemento",
+                    startDestination = "login",
                 ) {
+                    composable("login"){
+                        LoginScreen(navController = navController)
+                    }
                     composable("suplemento") {
                         ScaffoldContent(navController, items, selectedItem = 0, menuExpanded = false) {
                             ProductosScreen(navController = navController)

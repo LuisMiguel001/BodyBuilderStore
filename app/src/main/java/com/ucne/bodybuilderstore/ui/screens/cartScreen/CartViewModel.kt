@@ -1,14 +1,18 @@
 package com.ucne.bodybuilderstore.ui.screens.cartScreen
 
+import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
+import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.data.repository.CartRepository
+import com.ucne.bodybuilderstore.data.repository.StoreRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.forEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,7 +24,7 @@ class CartViewModel @Inject constructor(
 
     private val _cartItems = MutableStateFlow<List<CartEntity>>(emptyList())
     val cartItems: StateFlow<List<CartEntity>> = _cartItems
-
+    val cartItem = mutableStateListOf<StoreEntity>()
     private val _state = MutableStateFlow(StateCart())
     val state = _state.asStateFlow()
 
@@ -35,13 +39,14 @@ class CartViewModel @Inject constructor(
             }
         }
     }
+
     fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int,payId: Int, existencia: Int) {
         viewModelScope.launch {
             val existingItem = cartRepository.getCartItemByName(nombre)
             if (existingItem != null) {
                 cartRepository.updateCartItemQuantity(existingItem.id, existingItem.cantidad + cantidad)
             } else {
-                cartRepository.addToCart(imagen, nombre, precio, cantidad, locationId, payId, existencia)
+                cartRepository.addToCart(imagen, nombre, precio, cantidad, locationId = 1, payId, existencia)
             }
 
             _state.update {
@@ -49,12 +54,6 @@ class CartViewModel @Inject constructor(
                     MessageSucces = "Se agrego al carrito"
                 )
             }
-        }
-    }
-
-    fun updateCartItemExistence(itemId: Int, newExistence: Int) {
-        viewModelScope.launch {
-            cartRepository.updateCartItemExistence(itemId, newExistence)
         }
     }
 
@@ -79,6 +78,18 @@ class CartViewModel @Inject constructor(
         }
     }
 
+
+    fun OrderNow() {
+        viewModelScope.launch {
+            cartRepository.clearAll()
+            _state.update {
+                it.copy(
+                    MessageSucces = "Su orden se realizo correctemente.✔"
+                )
+            }
+        }
+    }
+
     fun getTotalItemsInCart(): Int {
         return _cartItems.value.size
     }
@@ -94,7 +105,6 @@ class CartViewModel @Inject constructor(
 
 data class StateCart(
     val info: String? = null,
-    val MessageSucces: String? = null
+    val MessageSucces: String? = null,
+    val cart: CartEntity = CartEntity()
 )
-
-

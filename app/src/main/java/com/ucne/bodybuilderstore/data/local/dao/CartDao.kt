@@ -39,7 +39,6 @@ interface CartDao {
     @Query("UPDATE table_cart SET cantidad = :newQuantity WHERE id = :itemId")
     suspend fun updateCartItemQuantity(itemId: Int, newQuantity: Int)
 
-
     /*Location*/
     @Query("SELECT * FROM table_cart WHERE id = :itemId")
     suspend fun getItemById(itemId: Int): CartEntity?
@@ -54,9 +53,4 @@ interface CartDao {
 
     @Query("SELECT * FROM table_payment_method WHERE id = :paymentMethodId")
     suspend fun getPaymentMethodById(paymentMethodId: Int): PaymentMethod?
-
-
-    @Query("UPDATE table_cart SET existencia = :newExistence WHERE id = :itemId")
-    suspend fun updateCartItemExistence(itemId: Int, newExistence: Int)
-
 }

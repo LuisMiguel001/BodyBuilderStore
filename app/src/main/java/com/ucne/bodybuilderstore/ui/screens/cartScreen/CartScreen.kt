@@ -1,9 +1,5 @@
 package com.ucne.bodybuilderstore.ui.screens.cartScreen
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -24,26 +20,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissState
-import androidx.compose.material3.DismissValue
-import androidx.compose.material3.Divider
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Surface
-import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -55,29 +41,26 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
 import com.ucne.bodybuilderstore.data.local.entity.Location
-import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.LocationForm
-import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.LocationViewModel
-import com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen.PaymentMethodForm
-import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.InformationCard
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.LocationForm
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.LocationViewModel
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.OrderSummary
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.PaymentMethodForm
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.SwipeToDeleteContainer
 import kotlinx.coroutines.delay
 
 @Composable
 fun CartScreen(
-    viewModel: ProductViewModel = hiltViewModel(),
     viewModelC: CartViewModel = hiltViewModel(),
     viewModelL: LocationViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
@@ -251,7 +234,7 @@ fun CartScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = { /**/},
+                        onClick = {viewModelC.OrderNow()},
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),
@@ -269,7 +252,6 @@ fun CartScreen(
                             )
                         )
                     }
-
                 }
             }
         }
@@ -378,234 +360,6 @@ fun CartItemRow(
                         )
                     }
                 }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SwipeToDeleteContainer(
-    item: CartEntity,
-    onDelete: (CartEntity) -> Unit,
-    onClick: () -> Unit,
-    animationDuration: Int = 500,
-    content: @Composable (CartEntity) -> Unit
-) {
-    var isRemoved by remember { mutableStateOf(false) }
-    var showUndoSnackbar by remember { mutableStateOf(false) }
-    var removedProductName by remember { mutableStateOf("") }
-
-    val state = rememberDismissState(
-        confirmValueChange = { value ->
-            if (value == DismissValue.DismissedToStart) {
-                showUndoSnackbar = true
-                removedProductName = item.nombre
-                false
-            } else {
-                false
-            }
-        }
-    )
-
-    LaunchedEffect(key1 = isRemoved) {
-        if (isRemoved) {
-            delay(animationDuration.toLong())
-            onDelete(item)
-        }
-    }
-
-    AnimatedVisibility(
-        visible = !isRemoved,
-        exit = shrinkVertically(
-            animationSpec = tween(durationMillis = animationDuration),
-            shrinkTowards = Alignment.Top
-        ) + fadeOut()
-    ) {
-        SwipeToDismiss(
-            state = state,
-            background = {
-                DeleteBackground(swipeDismissState = state)
-            },
-            dismissContent = {
-                Box(
-                    modifier = Modifier
-                        .clickable { onClick() }
-                ) {
-                    content(item)
-                }
-            },
-            directions = setOf(DismissDirection.EndToStart)
-        )
-    }
-
-    if (showUndoSnackbar) {
-        LaunchedEffect(Unit) {
-            delay(2000L)
-            showUndoSnackbar = false
-            onDelete(item)
-        }
-        Snackbar(
-            modifier = Modifier
-                .padding(6.dp),
-            action = {
-                TextButton(
-                    onClick = {
-                        showUndoSnackbar = false
-                    }
-                ) {
-                    Row {
-                        Image(
-                            painter = rememberAsyncImagePainter(R.drawable.icons8_undo_64),
-                            contentDescription = "Undo",
-                            modifier = Modifier
-                                .size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(3.dp))
-                        Text("UNDO")
-                    }
-                }
-            }
-        ) {
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            color = Color.LightGray
-                        )
-                    ) {
-                        append("'${removedProductName}'")
-                    }
-                    withStyle(style = SpanStyle(color = Color.Red)) {
-                        append("Se Eliminara")
-                    }
-                },
-            )
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun DeleteBackground(
-    swipeDismissState: DismissState
-) {
-    val color = if (swipeDismissState.dismissDirection == DismissDirection.EndToStart) {
-        Color.Red
-    } else Color.Transparent
-
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(color)
-            .padding(16.dp),
-        contentAlignment = Alignment.CenterEnd
-    ) {
-        Icon(
-            imageVector = Icons.Default.Delete,
-            contentDescription = null,
-            tint = Color.White
-        )
-    }
-}
-
-@Composable
-fun OrderSummary(
-    totalItemsInCart: Int,
-    totalProductsCount: Int,
-    totalPrice: Float
-) {
-    Card {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray)
-        ) {
-            Row(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(text = "Total Items in Cart:", fontWeight = FontWeight.Medium)
-                Spacer(modifier = Modifier.width(185.dp))
-                Text(text = "$totalItemsInCart")
-            }
-            Row(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(text = "Total Products Count:", fontWeight = FontWeight.Medium)
-                Spacer(modifier = Modifier.width(163.dp))
-                Text(text = "$totalProductsCount")
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider(color = Color.Gray, thickness = 1.dp)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                modifier = Modifier.padding(8.dp)
-            ) {
-                Text(
-                    text = "Total:",
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-                Spacer(modifier = Modifier.width(256.dp))
-                Text(
-                    text = String.format("$%.2f", totalPrice),
-                    fontWeight = FontWeight.Bold,
-                    color = Color.Black
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun InformationCard(
-    location: Location?,
-    onLocation: @Composable () -> Unit,
-    onPaymentMethod: @Composable () -> Unit,
-) {
-    Card {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Color.LightGray)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "Location: ",
-                    fontWeight = FontWeight.Medium
-                )
-                if (location != null) {
-                    Text(text = location.address, fontWeight = FontWeight.Bold, color = Color.Black)
-                } else {
-                    Text(text = "No hay dirección")
-                }
-                Spacer(modifier = Modifier.weight(1f))
-                onLocation()
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            Divider(color = Color.Gray, thickness = 1.dp)
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .padding(8.dp)
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = "Payment Method:",
-                    fontWeight = FontWeight.Medium
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                onPaymentMethod()
             }
         }
     }

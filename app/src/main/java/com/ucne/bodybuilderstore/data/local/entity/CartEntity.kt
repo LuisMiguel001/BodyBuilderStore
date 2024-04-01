@@ -9,13 +9,13 @@ import androidx.room.Relation
 data class CartEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0,
-    val imagen: String,
-    val nombre: String,
-    val precio: Float,
-    val cantidad: Int,
-    val existencia: Int,
-    val locationId: Int,
-    val paymentMethodId: Int
+    val imagen: String = "",
+    val nombre: String = "",
+    val precio: Float = 0f,
+    val cantidad: Int = 0,
+    var existencia: Int = 0,
+    val locationId: Int = 0,
+    val paymentMethodId: Int = 0
 )
 
 @Entity(tableName = "table_location")

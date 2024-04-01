@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "314503737959",
+    "project_id": "bodybuilderstore-f32de",
+    "storage_bucket": "bodybuilderstore-f32de.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:314503737959:android:cf1698c565782287e3dac2",
+        "android_client_info": {
+          "package_name": "com.ucne.bodybuilderstore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1KWIoQomF8LpuBuoJX70SbYeyomAYSmQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

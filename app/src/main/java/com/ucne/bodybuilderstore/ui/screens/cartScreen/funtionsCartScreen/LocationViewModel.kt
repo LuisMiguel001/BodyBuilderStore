@@ -1,9 +1,8 @@
-package com.ucne.bodybuilderstore.ui.screens.cartScreen.infoCartScreen
+package com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucne.bodybuilderstore.data.local.entity.Location
-import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.data.repository.CartRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow

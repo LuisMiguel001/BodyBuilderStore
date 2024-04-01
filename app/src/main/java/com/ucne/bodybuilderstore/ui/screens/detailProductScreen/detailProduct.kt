@@ -71,7 +71,7 @@ fun ProductDetailsScreen(
     viewModel: ProductViewModel = hiltViewModel(),
     viewModelC: CartViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
-    navController: NavController
+    navController: NavController,
 ) {
     val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
     val painter: Painter = rememberImagePainter(data = producto?.imagen)
