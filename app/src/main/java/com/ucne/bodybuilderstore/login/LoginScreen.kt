@@ -68,6 +68,9 @@ fun LoginScreen(
                     isCreateAccount = true
                 ) { email, password ->
                     Log.d("BodyBuilder", "Creado cuenta con $email y $password")
+                    viewModel.createUserWithEmailAndPassword(email, password){
+                        navController.navigate("suplemento")
+                    }
                 }
             }
             Spacer(modifier = Modifier.height(15.dp))

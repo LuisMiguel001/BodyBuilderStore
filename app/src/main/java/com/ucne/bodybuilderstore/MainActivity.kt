@@ -48,6 +48,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.google.firebase.auth.FirebaseAuth
 import com.ucne.bodybuilderstore.login.LoginScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.RegistroProduct
@@ -74,8 +75,16 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = "login",
                 ) {
-                    composable("login"){
-                        LoginScreen(navController = navController)
+                    composable("login") {
+                        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+                            LoginScreen(navController = navController)
+                        } else {
+                            navController.navigate("suplemento"){
+                                popUpTo("suplemento"){
+                                    inclusive = true
+                                }
+                            }
+                        }
                     }
                     composable("suplemento") {
                         ScaffoldContent(navController, items, selectedItem = 0, menuExpanded = false) {
