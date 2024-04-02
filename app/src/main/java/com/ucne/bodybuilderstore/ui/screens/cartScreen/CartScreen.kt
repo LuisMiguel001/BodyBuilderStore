@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -74,7 +75,8 @@ fun CartScreen(
     var isLocationFormVisible by remember { mutableStateOf(false) }
     var isPaymentMethodFormVisible by remember { mutableStateOf(false) }
     val cartLocationId = cartItems.firstOrNull()?.locationId ?: 0
-    val cartLocation = viewModelL.getLocationById(cartLocationId).collectAsState(initial = null).value
+    val cartLocation =
+        viewModelL.getLocationById(cartLocationId).collectAsState(initial = null).value
 
     Column(
         modifier = Modifier
@@ -114,10 +116,15 @@ fun CartScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Text(
-                    text = "Tu Carrito de BodyBuilder Store está vacío",
-                    style = MaterialTheme.typography.titleSmall
-                )
+                Column {
+                    Image(
+                        painter = painterResource(id = R.drawable.shopping_cart_computer_icons_shopping_centre_png_favpng_1xykjkkx84rxir2vdq2fmshyt),
+                        contentDescription = "Empty Cart")
+                    Text(
+                        text = "Tu Carrito de BodyBuilder Store está vacío",
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
             }
         } else {
             LazyColumn {
@@ -239,7 +246,7 @@ fun CartScreen(
 
                     Spacer(modifier = Modifier.height(16.dp))
                     Button(
-                        onClick = {viewModelC.OrderNow()},
+                        onClick = { viewModelC.OrderNow() },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 16.dp),

@@ -135,7 +135,7 @@ fun SwipeToDeleteContainer(
                             color = Color.LightGray
                         )
                     ) {
-                        append("'${removedProductName}'")
+                        append("'${removedProductName}' ")
                     }
                     withStyle(style = SpanStyle(color = Color.Red)) {
                         append("Se Eliminara")

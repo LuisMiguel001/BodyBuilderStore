@@ -44,6 +44,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,6 +65,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.util.FileUtil
+import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -74,7 +76,7 @@ fun RegistroProduct(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val _state = state.store
-
+    val isError = state.error != null || state.emptyFields.isNotEmpty()
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
@@ -94,7 +96,7 @@ fun RegistroProduct(
                     containerColor = Color.Blue
                 ),
                 title = {
-                    Row{
+                    Row {
                         IconButton(
                             onClick = { navigateBack() }
                         ) {
@@ -109,7 +111,9 @@ fun RegistroProduct(
                         Spacer(modifier = Modifier.width(14.dp))
                         Row {
                             Icon(
-                                imageVector = Icons.Default.Create, contentDescription = "add", tint = Color.White,
+                                imageVector = Icons.Default.Create,
+                                contentDescription = "add",
+                                tint = Color.White,
                                 modifier = Modifier.rotate(268f)
                             )
                             Text(
@@ -118,7 +122,11 @@ fun RegistroProduct(
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
                             )
-                            Icon(imageVector = Icons.Default.Create, contentDescription = "add", tint = Color.White)
+                            Icon(
+                                imageVector = Icons.Default.Create,
+                                contentDescription = "add",
+                                tint = Color.White
+                            )
                         }
                     }
                 }
@@ -170,6 +178,9 @@ fun RegistroProduct(
                     Text("Agregar Imagen", color = Color.White)
                 }
             }
+            if (state.emptyFields.contains("Imagen")) {
+                Text(text = "La Imagen es Requerida", color = Color.Red)
+            }
 
             OutlinedTextField(
                 value = _state.nombre,
@@ -179,6 +190,9 @@ fun RegistroProduct(
                     .fillMaxWidth()
                     .padding(5.dp)
             )
+            if (state.emptyFields.contains("Nombre")) {
+                Text(text = "El Nombre es Requerido", color = Color.Red)
+            }
 
             Column {
                 OutlinedTextField(
@@ -200,7 +214,6 @@ fun RegistroProduct(
                         )
                     }
                 )
-
                 DropdownMenu(
                     expanded = expanded,
                     onDismissRequest = { expanded = false },
@@ -220,6 +233,9 @@ fun RegistroProduct(
                     }
                 }
             }
+            if (state.emptyFields.contains("Tipo")) {
+                Text(text = "El Tipo de Producto es Requerido", color = Color.Red)
+            }
 
             OutlinedTextField(
                 value = _state.descripcion,
@@ -229,6 +245,9 @@ fun RegistroProduct(
                     .fillMaxWidth()
                     .padding(5.dp)
             )
+            if (state.emptyFields.contains("Descripción")) {
+                Text(text = "La Descripción es Requerida", color = Color.Red)
+            }
 
             OutlinedTextField(
                 value = _state.detalle,
@@ -238,6 +257,9 @@ fun RegistroProduct(
                     .fillMaxWidth()
                     .padding(5.dp)
             )
+            if (state.emptyFields.contains("Detalle")) {
+                Text(text = "El Detalle es Requerido", color = Color.Red)
+            }
 
             /*OutlinedTextField(
                 value = _state.existencia.toString(),
@@ -264,6 +286,16 @@ fun RegistroProduct(
                     imeAction = androidx.compose.ui.text.input.ImeAction.Next
                 )
             )
+            if (state.emptyFields.contains("Precio")) {
+                Text(text = "El Precio es Requerido", color = Color.Red)
+            }
+
+            /*val errorMessages = state.error
+            if (!errorMessages.isNullOrEmpty()) {
+                errorMessages.split(" \n").forEach { error ->
+                    Text(text = error, color = Color.Red)
+                }
+            }*/
 
             Row(
                 modifier = Modifier
@@ -279,8 +311,8 @@ fun RegistroProduct(
                         .weight(1f)
                         .padding(4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
-                        contentColor = Color.LightGray
+                        containerColor = Color.DarkGray,
+                        contentColor = Color.White
                     )
                 ) {
                     Row(
@@ -301,8 +333,8 @@ fun RegistroProduct(
                         .weight(1f)
                         .padding(4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Green,
-                        contentColor = Color.Black
+                        containerColor = Color.Blue,
+                        contentColor = Color.White
                     )
                 ) {
                     Row(
@@ -319,40 +351,49 @@ fun RegistroProduct(
         state.succesMessage?.let {
             MessageCard(message = it, color = Color.Green)
         }
-
-        state.error?.let {
+        /*state.error?.let {
             MessageCard(message = it, color = Color.Red)
-        }
+        }*/
     }
 }
 
 @Composable
 fun MessageCard(
     message: String,
-    color: Color
+    color: Color,
+    durationMillis: Long = 3000
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Card(
-            shape = RoundedCornerShape(8.dp),
+    var showMessage by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        delay(durationMillis)
+        showMessage = false
+    }
+
+    if (showMessage) {
+        Box(
             modifier = Modifier
-                .fillMaxWidth(0.8f)
+                .fillMaxSize()
                 .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
-            Surface(
-                modifier = Modifier.fillMaxWidth(),
-                color = color
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(16.dp),
             ) {
-                Text(
-                    text = message,
-                    style = MaterialTheme.typography.titleSmall,
-                    color = Color.White,
-                    modifier = Modifier.padding(16.dp)
-                )
+                Surface(
+                    modifier = Modifier.fillMaxWidth(),
+                    color = color
+                ) {
+                    Text(
+                        text = message,
+                        style = MaterialTheme.typography.titleSmall,
+                        color = Color.White,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
             }
         }
     }

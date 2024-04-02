@@ -19,7 +19,6 @@ class ProductViewModel @Inject constructor(
 ) : ViewModel() {
     private val _state = MutableStateFlow(StoreState())
     val state = _state.asStateFlow()
-    val stores: Flow<List<StoreEntity>> = storeRepository.getProducto()
 
     fun getProductosByType(type: String): Flow<List<StoreEntity>> {
         return storeRepository.getProductosByType(type)
@@ -28,35 +27,6 @@ class ProductViewModel @Inject constructor(
     fun getProductoById(id: Int): Flow<StoreEntity?> {
         return storeRepository.getProductoById(id)
     }
-
-    private val _cartItems = MutableStateFlow<List<StoreEntity>>(emptyList())
-/*    val cartItems: StateFlow<List<StoreEntity>> = _cartItems
-
-    fun addToCart(item: StoreEntity) {
-        val updatedCart = _cartItems.value.toMutableList()
-        val existingIndex = updatedCart.indexOfFirst { it.id == item.id }
-
-        _cartItems.value = updatedCart
-    }
-
-    fun removeFromCart(item: StoreEntity) {
-        val updatedCart = _cartItems.value.toMutableList()
-        val existingIndex = updatedCart.indexOfFirst { it.id == item.id }
-
-        _cartItems.value = updatedCart
-    }
-
-    fun markAsFavorite(id: Int) {
-        viewModelScope.launch {
-            storeRepository.markAsFavorite(id)
-        }
-    }
-
-    fun removeFromFavorites(id: Int) {
-        viewModelScope.launch {
-            storeRepository.removeFromFavorites(id)
-        }
-    }*/
 
     fun toggleFavorite(producto: StoreEntity) {
         viewModelScope.launch {
@@ -149,11 +119,31 @@ class ProductViewModel @Inject constructor(
                 val tipo = state.value.store.tipo
                 /*val existencia = state.value.store.existencia*/
 
-                if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank()
-                    || imagen.isBlank() || precio == 0.0f || descripcion.isBlank()) {
+                val emptyFields = mutableListOf<String>()
+                if (nombre.isBlank()) {
+                    emptyFields.add("Nombre")
+                }
+                if (descripcion.isBlank()) {
+                    emptyFields.add("Descripción")
+                }
+                if (detalle.isBlank()) {
+                    emptyFields.add("Detalle")
+                }
+                if (precio <= 0) {
+                    emptyFields.add("Precio")
+                }
+                if (imagen.isBlank()) {
+                    emptyFields.add("Imagen")
+                }
+                if (tipo.isBlank()) {
+                    emptyFields.add("Tipo")
+                }
+
+                if (emptyFields.isNotEmpty()) {
                     _state.update {
                         it.copy(
-                            error = "Por favor, complete todos los campos."
+                            error = "Llene los campos requeridos: ${emptyFields.joinToString(", ")}",
+                            emptyFields = emptyFields
                         )
                     }
                     return
@@ -183,7 +173,7 @@ class ProductViewModel @Inject constructor(
                         _state.update {
                             it.copy(
                                 isLoading = false,
-                                succesMessage = "Se guardó correctamente"
+                                succesMessage = "Se guardó correctamente✔"
                             )
                         }
                     } catch (e: Exception) {
@@ -198,7 +188,8 @@ class ProductViewModel @Inject constructor(
 
                 _state.update {
                     it.copy(
-                        store = StoreEntity()
+                        store = StoreEntity(),
+                        emptyFields = listOf()
                     )
                 }
             }
@@ -206,9 +197,9 @@ class ProductViewModel @Inject constructor(
             StoreEvent.onNew -> {
                 _state.update {
                     it.copy(
-                        succesMessage = null,
-                        error = null,
+                        succesMessage = "\tℹVacíoℹ",
                         store = StoreEntity(),
+                        emptyFields = listOf()
                     )
                 }
             }
@@ -227,6 +218,7 @@ data class StoreState(
     val error: String? = null,
     val store: StoreEntity = StoreEntity(),
     val succesMessage: String? = null,
+    val emptyFields: List<String> = listOf()
 )
 
 sealed interface StoreEvent {

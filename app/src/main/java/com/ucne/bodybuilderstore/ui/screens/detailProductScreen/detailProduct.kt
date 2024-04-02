@@ -177,15 +177,15 @@ fun ProductDetailsScreen(
                         containerColor = Color.White
                     )
                 ) {
+                    Text(
+                        text = "Descripción:",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold
+                    )
                     Column(
                         modifier = Modifier
                             .padding(16.dp)
                     ) {
-                        Text(
-                            text = "Descripción:",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
                         Spacer(modifier = Modifier.height(8.dp))
                         Text(
                             text = producto?.descripcion ?: "",
