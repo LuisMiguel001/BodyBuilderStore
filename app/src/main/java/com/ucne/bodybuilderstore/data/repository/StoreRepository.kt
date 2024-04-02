@@ -28,4 +28,15 @@ class StoreRepository @Inject constructor(
         return storeDao.getByType(type)
     }
 
+    suspend fun markAsFavorite(id: Int) {
+        storeDao.markAsFavorite(id)
+    }
+
+    suspend fun removeFromFavorites(id: Int) {
+        storeDao.removeFromFavorites(id)
+    }
+
+    fun getFavorites(): Flow<List<StoreEntity>> {
+        return storeDao.getFavorites()
+    }
 }

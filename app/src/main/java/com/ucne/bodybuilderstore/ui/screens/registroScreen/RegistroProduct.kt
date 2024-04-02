@@ -132,7 +132,7 @@ fun RegistroProduct(
                 .verticalScroll(rememberScrollState())
                 .padding(bottom = 70.dp),
         ) {
-            Spacer(modifier = Modifier.height(50.dp))
+            Spacer(modifier = Modifier.height(70.dp))
             if (_state.imagen.isNotEmpty()) {
                 Image(
                     painter = rememberImagePainter(_state.imagen),
@@ -239,7 +239,7 @@ fun RegistroProduct(
                     .padding(5.dp)
             )
 
-            OutlinedTextField(
+            /*OutlinedTextField(
                 value = _state.existencia.toString(),
                 onValueChange = { viewModel.onEvent(StoreEvent.Existencia(it)) },
                 label = { Text(text = "Unidades Disponibles") },
@@ -250,7 +250,7 @@ fun RegistroProduct(
                     keyboardType = KeyboardType.Number,
                     imeAction = androidx.compose.ui.text.input.ImeAction.Next
                 )
-            )
+            )*/
 
             OutlinedTextField(
                 value = _state.precio.toString(),

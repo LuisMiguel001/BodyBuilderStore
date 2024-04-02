@@ -13,5 +13,5 @@ data class StoreEntity(
     val precio: Float = 0f,
     val imagen: String = "",
     val tipo: String = "",
-    var existencia: Int = 0
+    var isFavorite: Boolean = false
 )

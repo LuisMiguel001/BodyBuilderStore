@@ -21,6 +21,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -70,7 +71,6 @@ fun ProductDetailsScreen(
     productId: Int,
     viewModel: ProductViewModel = hiltViewModel(),
     viewModelC: CartViewModel = hiltViewModel(),
-    navigateBack: () -> Unit,
     navController: NavController,
 ) {
     val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
@@ -87,11 +87,11 @@ fun ProductDetailsScreen(
         Spacer(modifier = Modifier.height(12.dp))
         Row {
             IconButton(
-                onClick = { navigateBack() }
+                onClick = {navController.navigate("suplemento") }
             ) {
                 Icon(
-                    imageVector = Icons.Default.KeyboardArrowLeft,
-                    contentDescription = "Back",
+                    imageVector = Icons.Default.Home,
+                    contentDescription = "home",
                     tint = Color.Black,
                     modifier = Modifier
                         .size(40.dp)
@@ -219,8 +219,7 @@ fun ProductDetailsScreen(
                     }
                 }
 
-
-                Card(
+               /* Card(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 8.dp),
@@ -250,7 +249,7 @@ fun ProductDetailsScreen(
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
-                }
+                }*/
                 Button(
                     onClick = {
                         producto?.let {
@@ -261,7 +260,7 @@ fun ProductDetailsScreen(
                                 cantidad = 1,
                                 locationId = it.id,
                                 payId = it.id,
-                                existencia = it.existencia
+                               /* existencia = it.existencia*/
                             )
                         }
                         productAddedToCart = true

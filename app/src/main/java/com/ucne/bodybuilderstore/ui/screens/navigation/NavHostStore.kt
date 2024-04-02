@@ -5,22 +5,30 @@ import android.view.animation.OvershootInterpolator
 import android.window.SplashScreen
 import androidx.activity.OnBackPressedCallback
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -29,6 +37,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
@@ -41,20 +50,25 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.login.LoginScreen
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartScreen
+import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.FavoritosScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.RegistroProduct
 import com.ucne.bodybuilderstore.ui.screens.splashScreen.SplashScreen
@@ -72,15 +86,15 @@ fun Navigation() {
         navController = navController,
         startDestination = "splach",
     ) {
-        composable("splach"){
+        composable("splach") {
             SplashScreen(navController = navController)
         }
         composable("login") {
             if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
                 LoginScreen(navController = navController)
             } else {
-                navController.navigate("suplemento"){
-                    popUpTo("splach"){
+                navController.navigate("suplemento") {
+                    popUpTo("splach") {
                         inclusive = true
                     }
                 }
@@ -102,10 +116,13 @@ fun Navigation() {
             }
         }
         composable("registro") {
-            RegistroProduct(navigateBack = {navController.navigateUp()})
+            RegistroProduct(navigateBack = { navController.navigateUp() })
         }
         composable("cart") {
-            CartScreen(navigateBack = {navController.navigateUp()})
+            CartScreen(navigateBack = { navController.navigateUp() })
+        }
+        composable("favorito") {
+            FavoritosScreen(navigateBack = { navController.navigateUp() })
         }
         composable(
             route = "detalle/{id}",
@@ -113,7 +130,7 @@ fun Navigation() {
         ) { backStackEntry ->
             val productId = backStackEntry.arguments?.getInt("id")
             productId?.let { productId ->
-                ProductDetailsScreen(productId, navigateBack = {navController.navigateUp()}, navController = navController)
+                ProductDetailsScreen(productId, navController = navController)
             }
         }
     }
@@ -130,51 +147,80 @@ fun ScaffoldContent(
     content: @Composable () -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userName = currentUser?.displayName ?: ""
+    val userEmail = currentUser?.email ?: ""
+    val userPhotoUrl = currentUser?.photoUrl
 
     Scaffold(
         topBar = {
-            Row(
-                modifier = Modifier
-                    .height(115.dp)
-                    .background(Color.Blue)
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Surface(
+                shape = RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp),
+                color = Color.Blue
             ) {
-                IconButton(onClick = { menuExpanded = true}) {
-                    Icon(
-                        imageVector = Icons.Filled.Menu,
-                        contentDescription = "Menu",
-                        tint = Color.White,
+                Column(
+                    modifier = Modifier
+                        .height(155.dp)
+                        .background(Color.Blue)
+                        .padding(vertical = 8.dp)
+                        .fillMaxWidth()
+                ) {
+                    Row {
+                        IconButton(onClick = { menuExpanded = true }) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = "Menu",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(35.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(50.dp))
+                        Text(
+                            modifier = Modifier.padding(top = 5.dp),
+                            text = "BodyBuilder Store",
+                            fontSize = 23.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color.White
+                        )
+                        Spacer(modifier = Modifier.width(50.dp))
+                        IconButton(onClick = { navController.navigate("cart") }) {
+                            Icon(
+                                imageVector = Icons.Filled.ShoppingCart,
+                                contentDescription = "cart",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(35.dp)
+                            )
+                        }
+                    }
+                    TextField(
+                        value = "",
+                        onValueChange = { /* Handle search input change */ },
                         modifier = Modifier
-                            .padding(4.dp)
-                            .size(35.dp)
+                            .fillMaxWidth()
+                            .padding(18.dp),
+                        placeholder = { Text("Search") },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.textFieldColors(
+                            disabledTextColor = Color.LightGray,
+                            cursorColor = Color.LightGray,
+                            disabledLeadingIconColor = Color.White,
+                            containerColor = Color.White,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Filled.Search,
+                                contentDescription = "Search",
+                                tint = Color.Gray
+                            )
+                        }
                     )
                 }
-                Spacer(modifier = Modifier.width(8.dp))
-                TextField(
-                    value = "",
-                    onValueChange = { /* Handle search input change */ },
-                    modifier = Modifier
-                        .weight(1f)
-                        .padding(vertical = 8.dp, horizontal = 12.dp),
-                    placeholder = { Text("Search") },
-                    shape = RoundedCornerShape(12.dp),
-                    colors = TextFieldDefaults.textFieldColors(
-                        disabledTextColor = Color.LightGray,
-                        cursorColor = Color.LightGray,
-                        disabledLeadingIconColor = Color.White,
-                        containerColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent
-                    ),
-                    leadingIcon = {
-                        Icon(
-                            imageVector = Icons.Filled.Search,
-                            contentDescription = "Search",
-                            tint = Color.Gray
-                        )
-                    }
-                )
             }
         },
         bottomBar = {
@@ -216,11 +262,65 @@ fun ScaffoldContent(
         if (menuExpanded) {
             DropdownMenu(
                 expanded = menuExpanded,
-                onDismissRequest = { menuExpanded = false  },
+                onDismissRequest = { menuExpanded = false },
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.5f)
+                    .fillMaxWidth(0.6f)
             ) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = Color.Blue
+                ){
+                    if (userPhotoUrl != null) {
+                        DropdownMenuItem(
+                            onClick = { /**/ },
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Image(
+                                        painter = rememberImagePainter(userPhotoUrl),
+                                        contentDescription = "User Photo",
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .clip(CircleShape)
+                                    )
+                                    Text(userName, color = Color.White)
+                                    userEmail?.let { email ->
+                                        DropdownMenuItem(
+                                            onClick = { /* Handle user profile click */ },
+                                            text = {
+                                                Text(email, color = Color.White)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    } else {
+                        DropdownMenuItem(
+                            onClick = { /**/ },
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(
+                                        imageVector = Icons.Filled.AccountCircle,
+                                        contentDescription = "Default User Icon",
+                                        modifier = Modifier.size(24.dp),
+                                        tint = Color.LightGray
+                                    )
+                                    Text(userName, color = Color.Black)
+                                    userEmail?.let { email ->
+                                        DropdownMenuItem(
+                                            onClick = { /**/ },
+                                            text = {
+                                                Text(email, color = Color.White)
+                                            }
+                                        )
+                                    }
+                                }
+                            }
+                        )
+                    }
+                }
+                Divider()
                 DropdownMenuItem(
                     onClick = { navController.navigate("cart") },
                     text = {
@@ -237,6 +337,24 @@ fun ScaffoldContent(
                     }
                 )
                 DropdownMenuItem(
+                    onClick = {
+                        menuExpanded = false
+                        navController.navigate("favorito")
+                    },
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Filled.Favorite,
+                                contentDescription = "Favorite",
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Black
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Favoritos")
+                        }
+                    }
+                )
+                DropdownMenuItem(
                     onClick = { navController.navigate("registro") },
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -248,6 +366,22 @@ fun ScaffoldContent(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text("Registro")
+                        }
+                    }
+                )
+                Divider()
+                DropdownMenuItem(
+                    onClick = {/**/},
+                    text = {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Filled.Settings,
+                                contentDescription = "Configuración",
+                                modifier = Modifier.size(24.dp),
+                                tint = Color.Black
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("Configuración")
                         }
                     }
                 )

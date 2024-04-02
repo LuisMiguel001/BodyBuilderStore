@@ -20,6 +20,8 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -63,7 +65,7 @@ fun ProductosScreen(
             .padding(bottom = 70.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(120.dp))
+        Spacer(modifier = Modifier.height(150.dp))
         LazyVerticalGrid(
             columns = GridCells.Fixed(2),
             modifier = Modifier.padding(8.dp)
@@ -71,6 +73,7 @@ fun ProductosScreen(
             items(productos) { producto ->
                 SuplemetoCard(producto = producto,
                     onDeleteClick = {viewModel.onEvent(StoreEvent.Delete(producto))},
+                    onFavoriteClick = { viewModel.toggleFavorite(producto) },
                     onClick = { navController.navigate("detalle/${producto.id}") }
                 )
             }
@@ -83,6 +86,7 @@ fun ProductosScreen(
 fun SuplemetoCard(
     producto: StoreEntity,
     onDeleteClick: () -> Unit,
+    onFavoriteClick: () -> Unit,
     onClick: () -> Unit
 ) {
     val painter: Painter = rememberImagePainter(data = producto.imagen)
@@ -134,16 +138,33 @@ fun SuplemetoCard(
                                 color = Color.Blue
                             )
                         }
-                        IconButton(
-                            onClick = onDeleteClick,
+                        Row(
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
+                                .align(Alignment.BottomEnd)
+                                .padding(8.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                tint = Color.Red,
-                                contentDescription = "Eliminar"
-                            )
+                            IconButton(
+                                onClick = onFavoriteClick,
+                                modifier = Modifier
+                                    .size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (producto.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                    tint = if (producto.isFavorite) Color.Red else Color.Gray,
+                                    contentDescription = "Favorito"
+                                )
+                            }
+                            IconButton(
+                                onClick = onDeleteClick,
+                                modifier = Modifier
+                                    .size(36.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Delete,
+                                    tint = Color.Red,
+                                    contentDescription = "Eliminar"
+                                )
+                            }
                         }
                     }
                 }

@@ -23,4 +23,13 @@ interface StoreDao {
 
     @Query("SELECT * FROM table_store WHERE tipo = :type")
     fun getByType(type: String): Flow<List<StoreEntity>>
+
+    @Query("SELECT * FROM table_store WHERE isFavorite = 1")
+    fun getFavorites(): Flow<List<StoreEntity>>
+
+    @Query("UPDATE table_store SET isFavorite = 1 WHERE id = :id")
+    suspend fun markAsFavorite(id: Int)
+
+    @Query("UPDATE table_store SET isFavorite = 0 WHERE id = :id")
+    suspend fun removeFromFavorites(id: Int)
 }

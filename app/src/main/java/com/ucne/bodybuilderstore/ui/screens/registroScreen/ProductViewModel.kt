@@ -30,7 +30,7 @@ class ProductViewModel @Inject constructor(
     }
 
     private val _cartItems = MutableStateFlow<List<StoreEntity>>(emptyList())
-    val cartItems: StateFlow<List<StoreEntity>> = _cartItems
+/*    val cartItems: StateFlow<List<StoreEntity>> = _cartItems
 
     fun addToCart(item: StoreEntity) {
         val updatedCart = _cartItems.value.toMutableList()
@@ -44,6 +44,32 @@ class ProductViewModel @Inject constructor(
         val existingIndex = updatedCart.indexOfFirst { it.id == item.id }
 
         _cartItems.value = updatedCart
+    }
+
+    fun markAsFavorite(id: Int) {
+        viewModelScope.launch {
+            storeRepository.markAsFavorite(id)
+        }
+    }
+
+    fun removeFromFavorites(id: Int) {
+        viewModelScope.launch {
+            storeRepository.removeFromFavorites(id)
+        }
+    }*/
+
+    fun toggleFavorite(producto: StoreEntity) {
+        viewModelScope.launch {
+            if (producto.isFavorite) {
+                storeRepository.removeFromFavorites(producto.id)
+            } else {
+                storeRepository.markAsFavorite(producto.id)
+            }
+        }
+    }
+
+    fun getFavorites(): Flow<List<StoreEntity>> {
+        return storeRepository.getFavorites()
     }
 
     fun onEvent(event: StoreEvent) {
@@ -106,13 +132,13 @@ class ProductViewModel @Inject constructor(
                 }
             }
 
-            is StoreEvent.Existencia -> {
+            /*is StoreEvent.Existencia -> {
                 _state.update {
                     it.copy(
                         store = it.store.copy(existencia = event.existencia.toIntOrNull() ?: 0)
                     )
                 }
-            }
+            }*/
 
             StoreEvent.onSave -> {
                 val nombre = state.value.store.nombre
@@ -121,10 +147,10 @@ class ProductViewModel @Inject constructor(
                 val precio = state.value.store.precio
                 val imagen = state.value.store.imagen
                 val tipo = state.value.store.tipo
-                val existencia = state.value.store.existencia
+                /*val existencia = state.value.store.existencia*/
 
                 if (nombre.isBlank() || descripcion.isBlank() || detalle.isBlank()
-                    || imagen.isBlank() || precio == 0.0f || descripcion.isBlank() || existencia == 0) {
+                    || imagen.isBlank() || precio == 0.0f || descripcion.isBlank()) {
                     _state.update {
                         it.copy(
                             error = "Por favor, complete todos los campos."
@@ -140,7 +166,7 @@ class ProductViewModel @Inject constructor(
                     precio = precio,
                     imagen = imagen,
                     tipo = tipo,
-                    existencia = existencia
+                    /*existencia = existencia*/
                 )
 
                 _state.update {
@@ -211,7 +237,7 @@ sealed interface StoreEvent {
     data class Precio(val precio: String) : StoreEvent
     data class Imagen(val imagen: String) : StoreEvent
     data class TipoProducto(val tipo: String) : StoreEvent
-    data class Existencia(val existencia: String) : StoreEvent
+    /*data class Existencia(val existencia: String) : StoreEvent*/
     data class Delete(val store: StoreEntity) : StoreEvent
     object onSave : StoreEvent
     object onNew : StoreEvent

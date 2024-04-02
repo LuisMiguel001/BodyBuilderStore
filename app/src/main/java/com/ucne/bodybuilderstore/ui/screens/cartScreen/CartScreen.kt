@@ -3,6 +3,7 @@ package com.ucne.bodybuilderstore.ui.screens.cartScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -72,8 +73,6 @@ fun CartScreen(
     val totalPrice = viewModelC.getTotalPrice()
     var isLocationFormVisible by remember { mutableStateOf(false) }
     var isPaymentMethodFormVisible by remember { mutableStateOf(false) }
-
-    val locationState by viewModelL.state.collectAsState()
     val cartLocationId = cartItems.firstOrNull()?.locationId ?: 0
     val cartLocation = viewModelL.getLocationById(cartLocationId).collectAsState(initial = null).value
 
@@ -108,10 +107,18 @@ fun CartScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         if (cartItems.isEmpty()) {
-            Text(
-                text = "Tu Carrito de BodyBuilder Store está vacío",
-                style = MaterialTheme.typography.titleMedium
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Tu Carrito de BodyBuilder Store está vacío",
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
         } else {
             LazyColumn {
                 items(cartItems) { item ->
@@ -129,8 +136,7 @@ fun CartScreen(
                                         item.precio,
                                         1,
                                         item.locationId,
-                                        item.paymentMethodId,
-                                        item.existencia
+                                        item.paymentMethodId
                                     )
                                 },
                                 onDecreaseClicked = {
@@ -140,8 +146,7 @@ fun CartScreen(
                                         item.precio,
                                         -1,
                                         item.locationId,
-                                        item.paymentMethodId,
-                                        item.existencia
+                                        item.paymentMethodId
                                     )
                                 }
                             )

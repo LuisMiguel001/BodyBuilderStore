@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.ucne.bodybuilderstore.login.data.User
@@ -83,5 +84,9 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             }.addOnFailureListener{
                 Log.d("BodyBuilder", "Error! ${it}")
             }
+    }
+
+    fun getCurrentUser(): FirebaseUser? {
+        return auth.currentUser
     }
 }
