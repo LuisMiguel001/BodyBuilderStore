@@ -47,7 +47,7 @@ class CartRepository @Inject constructor(
         cartDao.insertOrUpdatePaymentMethod(paymentMethod)
     }
 
-    suspend fun getPaymentMethodById(paymentMethodId: Int): PaymentMethod? {
+    fun getPaymentMethodById(paymentMethodId: Int): Flow<PaymentMethod?> {
         return cartDao.getPaymentMethodById(paymentMethodId)
     }
 }

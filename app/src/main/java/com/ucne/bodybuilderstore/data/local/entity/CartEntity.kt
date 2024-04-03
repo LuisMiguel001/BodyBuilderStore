@@ -33,8 +33,8 @@ data class Location(
 
 @Entity(tableName = "table_payment_method")
 data class PaymentMethod(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    @PrimaryKey(autoGenerate = false)
+    val id: Int = 1,
     val cardholderName: String = "",
     val cardNumber: String = "",
     val expirationDate: String = "",

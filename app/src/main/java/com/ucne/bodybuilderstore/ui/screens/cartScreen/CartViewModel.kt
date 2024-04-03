@@ -4,9 +4,11 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
+import com.ucne.bodybuilderstore.data.local.entity.Location
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.data.repository.CartRepository
 import com.ucne.bodybuilderstore.data.repository.StoreRepository
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.LocationState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -96,6 +98,16 @@ class CartViewModel @Inject constructor(
 
     fun getTotalPrice(): Float {
         return _cartItems.value.sumByDouble { it.precio.toDouble() * it.cantidad }.toFloat()
+    }
+
+
+    fun getLocationById(id: Int): Flow<Location?> {
+        return cartRepository.getLocationById(id)
+    }
+    private val _locationState = MutableStateFlow(LocationState())
+    val locationState: StateFlow<LocationState> = _locationState.asStateFlow()
+    fun updateLocationState(newLocationState: LocationState) {
+        _locationState.value = newLocationState
     }
 }
 

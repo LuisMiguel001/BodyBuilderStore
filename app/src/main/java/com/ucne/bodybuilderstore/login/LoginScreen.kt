@@ -66,17 +66,20 @@ fun LoginScreen(
                         errorMessage.value = error
                     })
                 }
-            } else {
+            }else {
                 Text(text = "Crea una cuenta")
                 UserForm(
                     isCreateAccount = true
                 ) { email, password ->
                     Log.d("BodyBuilder", "Creado cuenta con $email y $password")
-                    viewModel.createUserWithEmailAndPassword(email, password){
-                        navController.navigate("suplemento")
-                    }
+                    viewModel.createUserWithEmailAndPassword(email, password, {
+                            navController.navigate("suplemento")
+                    },{error ->
+                        errorMessage.value = error
+                    })
                 }
             }
+
             if (errorMessage.value.isNotBlank()) {
                 Text(
                     text = errorMessage.value,

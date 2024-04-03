@@ -36,7 +36,7 @@ import com.ucne.bodybuilderstore.data.local.entity.Location
 
 @Composable
 fun LocationForm(
-    location: Location,
+    initialLocation: Location,
     onDismiss: () -> Unit,
     viewModel: LocationViewModel = hiltViewModel()
 ) {
@@ -142,7 +142,10 @@ fun LocationForm(
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = {viewModel.onEvent(LocationEvent.onSave)},
+                onClick = {
+                    viewModel.onEvent(LocationEvent.onSave)
+                    onDismiss()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)

@@ -53,11 +53,13 @@ import coil.compose.rememberImagePainter
 import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.data.local.entity.CartEntity
 import com.ucne.bodybuilderstore.data.local.entity.Location
+import com.ucne.bodybuilderstore.data.local.entity.PaymentMethod
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.InformationCard
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.LocationForm
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.LocationViewModel
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.OrderSummary
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.PaymentMethodForm
+import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.PaymentMethodViewModel
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.funtionsCartScreen.SwipeToDeleteContainer
 import kotlinx.coroutines.delay
 
@@ -65,6 +67,7 @@ import kotlinx.coroutines.delay
 fun CartScreen(
     viewModelC: CartViewModel = hiltViewModel(),
     viewModelL: LocationViewModel = hiltViewModel(),
+    viewModelP: PaymentMethodViewModel = hiltViewModel(),
     navigateBack: () -> Unit,
 ) {
     val state by viewModelC.state.collectAsStateWithLifecycle()
@@ -75,8 +78,11 @@ fun CartScreen(
     var isLocationFormVisible by remember { mutableStateOf(false) }
     var isPaymentMethodFormVisible by remember { mutableStateOf(false) }
     val cartLocationId = cartItems.firstOrNull()?.locationId ?: 0
+    val cartPayId = cartItems.firstOrNull()?.paymentMethodId ?: 0
     val cartLocation =
         viewModelL.getLocationById(cartLocationId).collectAsState(initial = null).value
+    val cartPay =
+        viewModelP.getPaymentMethodById(cartPayId).collectAsState(initial = null).value
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Column(
@@ -199,13 +205,14 @@ fun CartScreen(
 
                     if (isLocationFormVisible) {
                         LocationForm(
-                            location = Location(),
+                            initialLocation = cartLocation ?: Location(),
                             onDismiss = { isLocationFormVisible = false }
                         )
                     }
 
                     if (isPaymentMethodFormVisible) {
                         PaymentMethodForm(
+                            initialPaymentMethod = cartPay ?: PaymentMethod(),
                             onDismiss = { isPaymentMethodFormVisible = false }
                         )
                     }
@@ -230,6 +237,7 @@ fun CartScreen(
                                 )
                             }
                         },
+                        payMethod = cartPay,
                         onPaymentMethod = {
                             IconButton(
                                 onClick = {

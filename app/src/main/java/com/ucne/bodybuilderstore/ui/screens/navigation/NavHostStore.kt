@@ -61,6 +61,7 @@ import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.FavoritosScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.RegistroProduct
+import com.ucne.bodybuilderstore.ui.screens.registroScreen.edit
 import com.ucne.bodybuilderstore.ui.screens.splashScreen.SplashScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ProductosScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.accesorioScreen
@@ -122,6 +123,15 @@ fun Navigation() {
                 ProductDetailsScreen(productId, navController = navController)
             }
         }
+        composable(
+            route = "edit/{id}",
+            arguments = listOf(navArgument("id") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val productId = backStackEntry.arguments?.getInt("id")
+            productId?.let { productId ->
+                edit(productId, navController = navController, navigateBack = { navController.navigateUp() })
+            }
+        }
     }
 }
 
@@ -141,6 +151,7 @@ fun ScaffoldContent(
     val userEmail = currentUser?.email ?: ""
     val userPhotoUrl = currentUser?.photoUrl
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
+    val isAdmin = userEmail == "admin@gmail.com"
 
     Scaffold(
         topBar = {
@@ -235,7 +246,7 @@ fun ScaffoldContent(
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = myGreen
-                ){
+                ) {
                     if (userPhotoUrl != null) {
                         DropdownMenuItem(
                             onClick = { /**/ },
@@ -319,24 +330,26 @@ fun ScaffoldContent(
                         }
                     }
                 )
-                DropdownMenuItem(
-                    onClick = { navController.navigate("registro") },
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Filled.Add,
-                                contentDescription = "Add",
-                                modifier = Modifier.size(24.dp),
-                                tint = Color.Black
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text("Registro")
+                if (isAdmin) {
+                    DropdownMenuItem(
+                        onClick = { navController.navigate("registro") },
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Filled.Add,
+                                    contentDescription = "Add",
+                                    modifier = Modifier.size(24.dp),
+                                    tint = Color.Black
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text("Registro")
+                            }
                         }
-                    }
-                )
+                    )
+                }
                 Divider()
                 DropdownMenuItem(
-                    onClick = {/**/},
+                    onClick = {/**/ },
                     text = {
                         Row(verticalAlignment = Alignment.CenterVertically) {
                             Icon(

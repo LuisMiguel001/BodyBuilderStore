@@ -19,6 +19,7 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     private val auth: FirebaseAuth = Firebase.auth
     private val _loading = MutableLiveData(false)
 
+    //Admin User: admin@gmail.com-@Dmin123
     fun signInWithEmailAndPssword(
         email: String,
         password: String,
@@ -45,8 +46,19 @@ class LoginViewModel @Inject constructor() : ViewModel() {
     fun createUserWithEmailAndPassword(
         email: String,
         password: String,
-        onCreateSucces: () -> Unit
+        onCreateSuccess: () -> Unit,
+        onCreateFailed: (String) -> Unit
     ) {
+        if (!isEmailValid(email)) {
+            onCreateFailed("El formato de correo electrónico no es válido.")
+            return
+        }
+
+        if (!isPasswordValid(password)) {
+            onCreateFailed("La contraseña no cumple con los requisitos de seguridad.")
+            return
+        }
+
         if (_loading.value == false) {
             _loading.value == true
             auth.createUserWithEmailAndPassword(email, password)
@@ -55,17 +67,25 @@ class LoginViewModel @Inject constructor() : ViewModel() {
                         val displayName =
                             task.result.user?.email?.split("@")?.get(0)
                         createUser(displayName)
-                        onCreateSucces()
+                        onCreateSuccess()
                     } else {
                         Log.d(
                             "BodyBuilder",
-                            "createWithEmailAndPssword: ${task.result.toString()}}"
+                            "createUserWithEmailAndPassword: ${task.exception}"
                         )
+                        val errorMessage = when(task.exception?.message) {
+                            "The email address is already in use by another account." ->
+                                "La dirección de correo electrónico ya está en uso."
+                            else ->
+                                "Error al crear la cuenta. Por favor, inténtalo de nuevo."
+                        }
+                        onCreateFailed(errorMessage)
                     }
                     _loading.value == false
                 }
         }
     }
+
 
     private fun createUser(displayName: String?) {
         val userId = auth.currentUser?.uid
@@ -84,6 +104,31 @@ class LoginViewModel @Inject constructor() : ViewModel() {
             }.addOnFailureListener{
                 Log.d("BodyBuilder", "Error! ${it}")
             }
+    }
+
+    private fun isEmailValid(email: String): Boolean {
+        return android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()
+    }
+
+    private fun isPasswordValid(password: String): Boolean {
+        val minLength = 6
+        if (password.length < minLength) {
+            return false
+        }
+
+        val specialCharacters = setOf('!', '@', '#', '$', '%', '^', '&', '*')
+        val containsSpecialCharacter = password.any { it in specialCharacters }
+        if (!containsSpecialCharacter) {
+            return false
+        }
+
+        val containsUpperCase = password.any { it.isUpperCase() }
+        val containsLowerCase = password.any { it.isLowerCase() }
+        if (!containsUpperCase || !containsLowerCase) {
+            return false
+        }
+
+        return true
     }
 
     fun getCurrentUser(): FirebaseUser? {

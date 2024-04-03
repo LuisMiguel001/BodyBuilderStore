@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
@@ -56,6 +57,7 @@ import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
@@ -66,7 +68,8 @@ fun ProductosScreen(
     viewModel: ProductViewModel = hiltViewModel(),
     navController: NavController,
 ) {
-    val productos by viewModel.getProductosByType("Suplemento").collectAsState(initial = emptyList())
+    val productos by viewModel.getProductosByType("Suplemento")
+        .collectAsState(initial = emptyList())
     var searchQuery by remember { mutableStateOf("") }
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
@@ -118,7 +121,10 @@ fun ProductosScreen(
                     producto = producto,
                     onDeleteClick = { viewModel.onEvent(StoreEvent.Delete(producto)) },
                     onFavoriteClick = { viewModel.toggleFavorite(producto) },
-                    onClick = { navController.navigate("detalle/${producto.id}") }
+                    onClick = { navController.navigate("detalle/${producto.id}") },
+                    onEdit = {
+                        navController.navigate("edit/${producto.id}")
+                    }
                 )
             }
         }
@@ -131,10 +137,14 @@ fun SuplemetoCard(
     producto: StoreEntity,
     onDeleteClick: () -> Unit,
     onFavoriteClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEdit: () -> Unit
 ) {
     val painter: Painter = rememberImagePainter(data = producto.imagen)
-    val myOrange = Color(android.graphics.Color.parseColor("#FF5400"))
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userEmail = currentUser?.email ?: ""
+    val isAdmin = userEmail == "admin@gmail.com"
 
     Card(
         elevation = CardDefaults.cardElevation(10.dp),
@@ -144,14 +154,31 @@ fun SuplemetoCard(
             modifier = Modifier
                 .clickable { onClick() }
         ) {
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(200.dp)
-                    .aspectRatio(1f)
-                    .clip(MaterialTheme.shapes.medium)
-            )
+            Box(
+                modifier = Modifier.aspectRatio(1f)
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(175.dp)
+                        .aspectRatio(1f)
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                IconButton(
+                    onClick = onFavoriteClick,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp)
+                ) {
+                    Icon(
+                        imageVector = if (producto.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        tint = if (producto.isFavorite) Color.Red else Color.Gray,
+                        contentDescription = "Favorito",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -179,35 +206,37 @@ fun SuplemetoCard(
                             Text(
                                 text = String.format("%.2f", producto.precio),
                                 style = MaterialTheme.typography.titleSmall,
-                                color = Color.Blue
+                                color = myGreen
                             )
                         }
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(8.dp)
                         ) {
                             IconButton(
-                                onClick = onFavoriteClick,
+                                onClick = { onEdit() },
                                 modifier = Modifier
                                     .size(36.dp)
                             ) {
                                 Icon(
-                                    imageVector = if (producto.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    tint = if (producto.isFavorite) Color.Red else Color.Gray,
-                                    contentDescription = "Favorito"
+                                    imageVector = Icons.Default.Edit,
+                                    tint = Color.Gray,
+                                    contentDescription = "Editar"
                                 )
                             }
-                            IconButton(
-                                onClick = onDeleteClick,
-                                modifier = Modifier
-                                    .size(36.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    tint = Color.Red,
-                                    contentDescription = "Eliminar"
-                                )
+                            if (isAdmin) {
+                                IconButton(
+                                    onClick = onDeleteClick,
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        tint = Color.Red,
+                                        contentDescription = "Eliminar"
+                                    )
+                                }
                             }
                         }
                     }

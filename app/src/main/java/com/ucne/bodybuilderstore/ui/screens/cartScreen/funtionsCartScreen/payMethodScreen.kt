@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.ShapeDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,11 +31,20 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ucne.bodybuilderstore.data.local.entity.PaymentMethod
+
 
 @Composable
 fun PaymentMethodForm(
-    onDismiss: () -> Unit
+    initialPaymentMethod: PaymentMethod,
+    onDismiss: () -> Unit,
+    viewModel: PaymentMethodViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val _state = state.paymentMethod
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(
@@ -57,8 +67,9 @@ fun PaymentMethodForm(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Payment Method Form",
-                    style = MaterialTheme.typography.titleMedium
+                    text = "Info Credit Card",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 20.sp
                 )
                 Button(
                     onClick = onDismiss,
@@ -76,70 +87,76 @@ fun PaymentMethodForm(
             }
             Divider(color = Color.DarkGray, thickness = 1.dp)
 
-            Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                label = { Text("Nombre del titular de la tarjeta") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                label = { Text("Número de tarjeta") }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
+                value = _state.cardholderName,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.CardholderName(it)) },
+                label = { Text("Cardholder Name") },
                 modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = { },
-                    label = { Text("Fecha de vencimiento") },
-                    modifier = Modifier.weight(1f)
-                )
-                Spacer(modifier = Modifier.width(16.dp))
-                OutlinedTextField(
-                    value = "",
-                    onValueChange = { },
-                    label = { Text("CVV/CVC") },
-                    modifier = Modifier.width(120.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                label = { Text("Tipo de tarjeta") }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                label = { Text("Dirección de facturación") }
+                value = _state.cardNumber,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.CardNumber(it))
+                },
+                label = { Text("Card Number") },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                label = { Text("Código postal") }
+                value = _state.expirationDate,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.ExpirationDate(it)) },
+                label = { Text("Expiration Date") },
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
             OutlinedTextField(
-                value = "",
-                onValueChange = { },
-                label = { Text("Correo electrónico") }
+                value = _state.cvv,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.Cvv(it)) },
+                label = { Text("CVV/CVC") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = _state.cardType,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.CardType(it)) },
+                label = { Text("Card Type") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = _state.billingAddress,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.BillingAddress(it)) },
+                label = { Text("Billing Address") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = _state.postalCode,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.PostalCode(it))},
+                label = { Text("Postal Code") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedTextField(
+                value = _state.email,
+                onValueChange = { viewModel.onEvent(PaymentMethodEvent.Email(it))},
+                label = { Text("Email") },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(
-                onClick = onDismiss,
+                onClick = {
+                    viewModel.onEvent(PaymentMethodEvent.Save)
+                    onDismiss()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
@@ -151,7 +168,7 @@ fun PaymentMethodForm(
                 shape = ShapeDefaults.Small
             ) {
                 Row {
-                    Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "Check")
+                    Icon(imageVector = Icons.Default.CheckCircle, contentDescription = "Save")
                     Text("Save")
                 }
             }

@@ -139,12 +139,6 @@ class LocationViewModel @Inject constructor(
                         }
                     }
                 }
-
-                _state.update {
-                    it.copy(
-                        location = Location()
-                    )
-                }
             }
 
             LocationEvent.onNew -> {

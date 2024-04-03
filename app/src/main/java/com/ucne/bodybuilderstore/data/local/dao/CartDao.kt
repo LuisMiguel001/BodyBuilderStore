@@ -26,11 +26,14 @@ interface CartDao {
     suspend fun clearCart()
     @Query("DELETE FROM table_location")
     suspend fun clearLocation()
+    @Query("DELETE FROM table_payment_method")
+    suspend fun clearPay()
 
     @Transaction
     suspend fun clearAll() {
         clearCart()
         clearLocation()
+        clearPay()
     }
 
     @Query("SELECT * FROM table_cart WHERE nombre = :nombre LIMIT 1")
@@ -52,5 +55,5 @@ interface CartDao {
     suspend fun insertOrUpdatePaymentMethod(paymentMethod: PaymentMethod)
 
     @Query("SELECT * FROM table_payment_method WHERE id = :paymentMethodId")
-    suspend fun getPaymentMethodById(paymentMethodId: Int): PaymentMethod?
+    fun getPaymentMethodById(paymentMethodId: Int): Flow<PaymentMethod?>
 }

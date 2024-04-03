@@ -41,6 +41,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -64,28 +65,48 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
+import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.util.FileUtil
 import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun RegistroProduct(
+fun edit(
+    productId: Int,
     viewModel: ProductViewModel = hiltViewModel(),
+    navController: NavController,
     navigateBack: () -> Unit
 ) {
+    val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
     val state by viewModel.state.collectAsStateWithLifecycle()
     val _state = state.store
-    val isError = state.error != null || state.emptyFields.isNotEmpty()
+
+    var nombre by remember { mutableStateOf(producto?.nombre ?: "") }
+    var descripcion by remember { mutableStateOf(producto?.descripcion ?: "") }
+    var detalle by remember { mutableStateOf(producto?.detalle ?: "") }
+    var precio by remember { mutableStateOf(producto?.precio.toString() ?: "") }
+    var imagen by remember { mutableStateOf(producto?.imagen ?: "") }
+    var tipo by remember { mutableStateOf(producto?.tipo ?: "") }
+
+    LaunchedEffect(producto) {
+        nombre = producto?.nombre ?: ""
+        descripcion = producto?.descripcion ?: ""
+        detalle = producto?.detalle ?: ""
+        precio = producto?.precio?.toString() ?: ""
+        imagen = producto?.imagen ?: ""
+        tipo = producto?.tipo ?: ""
+    }
+
     val context = LocalContext.current
     val launcher =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) { uri ->
             val filePath = uri?.let { FileUtil.saveImage(context, it) }
-            filePath?.let { StoreEvent.Imagen(it) }?.let { viewModel.onEvent(it) }
+            filePath?.let { imagen = it }
         }
-
     var expanded by remember { mutableStateOf(false) }
     var selectedType by remember { mutableStateOf("") }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
@@ -120,7 +141,7 @@ fun RegistroProduct(
                                 modifier = Modifier.rotate(268f)
                             )
                             Text(
-                                text = "Registro de Producto",
+                                text = "Editor de Producto",
                                 color = Color.White,
                                 modifier = Modifier
                                     .align(Alignment.CenterVertically)
@@ -144,9 +165,9 @@ fun RegistroProduct(
                 .padding(bottom = 70.dp),
         ) {
             Spacer(modifier = Modifier.height(70.dp))
-            if (_state.imagen.isNotEmpty()) {
+            if (imagen.isNotEmpty()) {
                 Image(
-                    painter = rememberImagePainter(_state.imagen),
+                    painter = rememberImagePainter(imagen),
                     contentDescription = null,
                     modifier = Modifier
                         .size(200.dp)
@@ -181,26 +202,22 @@ fun RegistroProduct(
                     Text("Agregar Imagen", color = Color.White)
                 }
             }
-            if (state.emptyFields.contains("Imagen")) {
-                Text(text = "La Imagen es Requerida", color = Color.Red)
-            }
+
 
             OutlinedTextField(
-                value = _state.nombre,
-                onValueChange = { viewModel.onEvent(StoreEvent.Nombre(it)) },
+                value = nombre,
+                onValueChange = { nombre = it },
                 label = { Text(text = "Nombre") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
             )
-            if (state.emptyFields.contains("Nombre")) {
-                Text(text = "El Nombre es Requerido", color = Color.Red)
-            }
+
 
             Column {
                 OutlinedTextField(
-                    value = selectedType,
-                    onValueChange = { selectedType = it },
+                    value = tipo,
+                    onValueChange = { },
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(5.dp)
@@ -223,63 +240,42 @@ fun RegistroProduct(
                     modifier = Modifier
                         .width(with(LocalDensity.current) { textfieldSize.width.toDp() })
                 ) {
-                    listOf("Suplemento", "Accesorio", "Ropa").forEach { tipo ->
+                    listOf("Suplemento", "Accesorio", "Ropa").forEach { tip ->
                         DropdownMenuItem(onClick = {
-                            selectedType = tipo
+                            selectedType = tip
                             expanded = false
-                            viewModel.onEvent(StoreEvent.TipoProducto(tipo))
+                            tipo = tip
                         },
                             text = {
-                                Text(text = tipo)
+                                Text(text = tip)
                             }
                         )
                     }
                 }
             }
-            if (state.emptyFields.contains("Tipo")) {
-                Text(text = "El Tipo de Producto es Requerido", color = Color.Red)
-            }
 
             OutlinedTextField(
-                value = _state.descripcion,
-                onValueChange = { viewModel.onEvent(StoreEvent.Descripcion(it)) },
+                value = descripcion,
+                onValueChange = { descripcion = it },
                 label = { Text(text = "Descripción") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
             )
-            if (state.emptyFields.contains("Descripción")) {
-                Text(text = "La Descripción es Requerida", color = Color.Red)
-            }
 
             OutlinedTextField(
-                value = _state.detalle,
-                onValueChange = { viewModel.onEvent(StoreEvent.Detalle(it)) },
+                value = detalle,
+                onValueChange = { detalle = it },
                 label = { Text(text = "Detalle") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
             )
-            if (state.emptyFields.contains("Detalle")) {
-                Text(text = "El Detalle es Requerido", color = Color.Red)
-            }
 
-            /*OutlinedTextField(
-                value = _state.existencia.toString(),
-                onValueChange = { viewModel.onEvent(StoreEvent.Existencia(it)) },
-                label = { Text(text = "Unidades Disponibles") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = androidx.compose.ui.text.input.ImeAction.Next
-                )
-            )*/
 
             OutlinedTextField(
-                value = _state.precio.toString(),
-                onValueChange = { viewModel.onEvent(StoreEvent.Precio(it)) },
+                value = precio,
+                onValueChange = { precio = it },
                 label = { Text(text = "Precio") },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -289,16 +285,6 @@ fun RegistroProduct(
                     imeAction = androidx.compose.ui.text.input.ImeAction.Next
                 )
             )
-            if (state.emptyFields.contains("Precio")) {
-                Text(text = "El Precio es Requerido", color = Color.Red)
-            }
-
-            /*val errorMessages = state.error
-            if (!errorMessages.isNullOrEmpty()) {
-                errorMessages.split(" \n").forEach { error ->
-                    Text(text = error, color = Color.Red)
-                }
-            }*/
 
             Row(
                 modifier = Modifier
@@ -327,10 +313,20 @@ fun RegistroProduct(
                         Text("Nuevo")
                     }
                 }
-
                 Button(
                     onClick = {
-                        viewModel.onEvent(StoreEvent.onSave)
+                        viewModel.updateProduct(
+                            StoreEntity(
+                                id = productId,
+                                nombre = nombre,
+                                descripcion = descripcion,
+                                detalle = detalle,
+                                precio = precio.toFloatOrNull() ?: 0f,
+                                imagen = imagen,
+                                tipo = tipo
+                            )
+                        )
+                        navController.popBackStack()
                     },
                     modifier = Modifier
                         .weight(1f)
@@ -351,14 +347,11 @@ fun RegistroProduct(
                 }
             }
         }
-        state.succesMessage?.let {
-            MessageCard(message = it, color = Color.Gray)
-        }
     }
 }
 
 @Composable
-fun MessageCard(
+fun MessageCar(
     message: String,
     color: Color,
     durationMillis: Long = 3000

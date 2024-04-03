@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.google.firebase.auth.FirebaseAuth
 import com.ucne.bodybuilderstore.data.local.entity.StoreEntity
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
@@ -108,9 +110,11 @@ fun ropaScreen(
             items(filteredProducts) { producto ->
                 RopaCard(
                     producto = producto,
-                    onDeleteClick = {viewModel.onEvent(StoreEvent.Delete(producto))},
+                    onDeleteClick = { viewModel.onEvent(StoreEvent.Delete(producto)) },
                     onFavoriteClick = { viewModel.toggleFavorite(producto) },
-                    onClick = { navController.navigate("detalle/${producto.id}") })
+                    onClick = { navController.navigate("detalle/${producto.id}") },
+                    onEdit = { navController.navigate("edit/${producto.id}") }
+                )
             }
         }
         Spacer(modifier = Modifier.height(1000.dp))
@@ -122,10 +126,14 @@ fun RopaCard(
     producto: StoreEntity,
     onDeleteClick: () -> Unit,
     onFavoriteClick: () -> Unit,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEdit: () -> Unit
 ) {
     val painter: Painter = rememberImagePainter(data = producto.imagen)
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
+    val currentUser = FirebaseAuth.getInstance().currentUser
+    val userEmail = currentUser?.email ?: ""
+    val isAdmin = userEmail == "admin@gmail.com"
 
     Card(
         elevation = CardDefaults.cardElevation(10.dp),
@@ -135,14 +143,29 @@ fun RopaCard(
             modifier = Modifier
                 .clickable { onClick() }
         ) {
-            Image(
-                painter = painter,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(200.dp)
-                    .aspectRatio(1f)
-                    .clip(MaterialTheme.shapes.medium)
-            )
+            Box(
+                modifier = Modifier.aspectRatio(1f)
+            ) {
+                Image(
+                    painter = painter,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(MaterialTheme.shapes.medium)
+                )
+                IconButton(
+                    onClick = onFavoriteClick,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = if (producto.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                        tint = if (producto.isFavorite) Color.Red else Color.Gray,
+                        contentDescription = "Favorito",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
             Spacer(modifier = Modifier.height(8.dp))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -173,31 +196,33 @@ fun RopaCard(
                                 color = myGreen
                             )
                         }
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .align(Alignment.BottomEnd)
                                 .padding(8.dp)
                         ) {
-                            IconButton(
-                                onClick = onFavoriteClick,
-                                modifier = Modifier
-                                    .size(36.dp)
-                            ) {
-                                Icon(
-                                    imageVector = if (producto.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                    tint = if (producto.isFavorite) Color.Red else Color.Gray,
-                                    contentDescription = "Favorito"
-                                )
+                            if (isAdmin) {
+                                IconButton(
+                                    onClick = onDeleteClick,
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        tint = Color.Red,
+                                        contentDescription = "Eliminar"
+                                    )
+                                }
                             }
                             IconButton(
-                                onClick = onDeleteClick,
+                                onClick = { onEdit() },
                                 modifier = Modifier
                                     .size(36.dp)
                             ) {
                                 Icon(
-                                    imageVector = Icons.Default.Delete,
-                                    tint = Color.Red,
-                                    contentDescription = "Eliminar"
+                                    imageVector = Icons.Default.Edit,
+                                    tint = Color.Gray,
+                                    contentDescription = "Editar"
                                 )
                             }
                         }

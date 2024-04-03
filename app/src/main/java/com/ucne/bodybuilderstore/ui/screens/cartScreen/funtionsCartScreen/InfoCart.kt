@@ -18,10 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.ucne.bodybuilderstore.data.local.entity.Location
+import com.ucne.bodybuilderstore.data.local.entity.PaymentMethod
 
 @Composable
 fun InformationCard(
     location: Location?,
+    payMethod: PaymentMethod?,
     onLocation: @Composable () -> Unit,
     onPaymentMethod: @Composable () -> Unit,
 ) {
@@ -61,9 +63,14 @@ fun InformationCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Payment Method:",
+                    text = "Info Credit Card:",
                     fontWeight = FontWeight.Medium
                 )
+                if (payMethod != null) {
+                    Text(text = payMethod.cardholderName, fontWeight = FontWeight.Bold, color = Color.Black)
+                } else {
+                    Text(text = "No hay Info")
+                }
                 Spacer(modifier = Modifier.weight(1f))
                 onPaymentMethod()
             }

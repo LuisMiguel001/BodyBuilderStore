@@ -28,6 +28,12 @@ class ProductViewModel @Inject constructor(
         return storeRepository.getProductoById(id)
     }
 
+    fun updateProduct(producto: StoreEntity) {
+        viewModelScope.launch {
+            storeRepository.upsert(producto)
+        }
+    }
+
     fun toggleFavorite(producto: StoreEntity) {
         viewModelScope.launch {
             if (producto.isFavorite) {
