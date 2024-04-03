@@ -51,14 +51,10 @@ class CartViewModel @Inject constructor(
 
             _state.update {
                 it.copy(
-                    MessageSucces = "Se agrego al carrito"
+                    MessageSucces = "\t\t\t\t✔Se agrego al carrito✔"
                 )
             }
         }
-    }
-
-    fun getAllCartItems(): Flow<List<CartEntity>> {
-        return cartRepository.getAllCartItems()
     }
 
     fun removeCartItem(itemId: Int) {
@@ -72,7 +68,7 @@ class CartViewModel @Inject constructor(
             cartRepository.clearAll()
             _state.update {
                 it.copy(
-                    info = "Se limpio el carrito"
+                    info = "\t\t\t\tℹSe limpio el carritoℹ"
                 )
             }
         }
@@ -84,7 +80,7 @@ class CartViewModel @Inject constructor(
             cartRepository.clearAll()
             _state.update {
                 it.copy(
-                    MessageSucces = "Su orden se realizo correctemente.✔"
+                    info = "\t\t\t\t✔Orden Excitosa✔"
                 )
             }
         }

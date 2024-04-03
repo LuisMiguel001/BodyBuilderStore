@@ -88,12 +88,13 @@ fun RegistroProduct(
     var selectedType by remember { mutableStateOf("") }
     var textfieldSize by remember { mutableStateOf(Size.Zero) }
     val icon = if (expanded) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Scaffold(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue
+                    containerColor = myGreen
                 ),
                 title = {
                     Row {
@@ -333,7 +334,7 @@ fun RegistroProduct(
                         .weight(1f)
                         .padding(4.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
+                        containerColor = myGreen,
                         contentColor = Color.White
                     )
                 ) {
@@ -349,7 +350,7 @@ fun RegistroProduct(
             }
         }
         state.succesMessage?.let {
-            MessageCard(message = it, color = Color.Green)
+            MessageCard(message = it, color = Color.Gray)
         }
         /*state.error?.let {
             MessageCard(message = it, color = Color.Red)

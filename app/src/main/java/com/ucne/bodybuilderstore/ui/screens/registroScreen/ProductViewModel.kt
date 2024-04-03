@@ -38,6 +38,11 @@ class ProductViewModel @Inject constructor(
         }
     }
 
+    fun searchProductsByName(name: String): Flow<List<StoreEntity>> {
+        return storeRepository.searchProductsByName(name)
+    }
+
+
     fun getFavorites(): Flow<List<StoreEntity>> {
         return storeRepository.getFavorites()
     }
@@ -197,7 +202,7 @@ class ProductViewModel @Inject constructor(
             StoreEvent.onNew -> {
                 _state.update {
                     it.copy(
-                        succesMessage = "\tℹVacíoℹ",
+                        succesMessage = "\t\t\t\t\t\t\tℹVacíoℹ",
                         store = StoreEntity(),
                         emptyFields = listOf()
                     )

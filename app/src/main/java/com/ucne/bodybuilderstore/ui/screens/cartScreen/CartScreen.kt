@@ -77,6 +77,7 @@ fun CartScreen(
     val cartLocationId = cartItems.firstOrNull()?.locationId ?: 0
     val cartLocation =
         viewModelL.getLocationById(cartLocationId).collectAsState(initial = null).value
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Column(
         modifier = Modifier
@@ -116,15 +117,14 @@ fun CartScreen(
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column {
-                    Image(
-                        painter = painterResource(id = R.drawable.shopping_cart_computer_icons_shopping_centre_png_favpng_1xykjkkx84rxir2vdq2fmshyt),
-                        contentDescription = "Empty Cart")
-                    Text(
-                        text = "Tu Carrito de BodyBuilder Store está vacío",
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                }
+                Image(
+                    painter = painterResource(id = R.drawable.shopping_cart_computer_icons_shopping_centre_png_favpng_1xykjkkx84rxir2vdq2fmshyt_removebg_preview),
+                    contentDescription = "Empty Cart"
+                )
+                Text(
+                    text = "Tu Carrito de BodyBuilder Store está vacío",
+                    style = MaterialTheme.typography.titleSmall
+                )
             }
         } else {
             LazyColumn {
@@ -252,7 +252,7 @@ fun CartScreen(
                             .padding(vertical = 16.dp),
                         shape = RoundedCornerShape(8.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Blue,
+                            containerColor = myGreen,
                             contentColor = Color.White
                         )
                     ) {
@@ -268,12 +268,8 @@ fun CartScreen(
             }
         }
     }
-    state.MessageSucces?.let {
-        MessageCard(message = it, color = Color.Green)
-    }
-
     state.info?.let {
-        MessageCard(message = it, color = Color.Red)
+        MessageCard(message = it, color = Color.Gray)
     }
 }
 
@@ -284,6 +280,8 @@ fun CartItemRow(
     onIncreaseClicked: () -> Unit,
     onDecreaseClicked: () -> Unit
 ) {
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -317,7 +315,7 @@ fun CartItemRow(
                 Text(
                     text = String.format("$%.2f", item.precio),
                     style = MaterialTheme.typography.titleMedium,
-                    color = Color.Blue
+                    color = myGreen
                 )
             }
 
@@ -401,7 +399,7 @@ fun MessageCard(
                 shape = RoundedCornerShape(8.dp),
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .padding(16.dp),
+                    .padding(10.dp),
             ) {
                 Surface(
                     modifier = Modifier.fillMaxWidth(),

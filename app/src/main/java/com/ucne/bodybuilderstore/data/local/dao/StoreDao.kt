@@ -24,6 +24,10 @@ interface StoreDao {
     @Query("SELECT * FROM table_store WHERE tipo = :type")
     fun getByType(type: String): Flow<List<StoreEntity>>
 
+
+    @Query("SELECT * FROM table_store WHERE nombre LIKE '%' || :name || '%'")
+    fun searchByName(name: String): Flow<List<StoreEntity>>
+
     @Query("SELECT * FROM table_store WHERE isFavorite = 1")
     fun getFavorites(): Flow<List<StoreEntity>>
 

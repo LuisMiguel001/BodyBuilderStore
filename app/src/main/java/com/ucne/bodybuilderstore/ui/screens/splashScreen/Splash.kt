@@ -47,7 +47,7 @@ fun SplashScreen(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.Black
+        color = Color.White
     ){
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,

@@ -75,10 +75,10 @@ fun ProductDetailsScreen(
 ) {
     val producto by viewModel.getProductoById(productId).collectAsState(initial = null)
     val painter: Painter = rememberImagePainter(data = producto?.imagen)
-    val myGreen = Color(android.graphics.Color.parseColor("#00A42E"))
     var productAddedToCart by remember { mutableStateOf(false) }
     val state by viewModelC.state.collectAsStateWithLifecycle()
     val productosSimilares by viewModel.getProductosByType(producto?.tipo ?: "").collectAsState(initial = emptyList())
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Column(
         modifier = Modifier
@@ -148,7 +148,7 @@ fun ProductDetailsScreen(
                             .fillMaxWidth(0.6f)
                             .fillMaxHeight(0.08f)
                             .padding(1.dp),
-                        colors = CardDefaults.cardColors(Color.Blue)
+                        colors = CardDefaults.cardColors(myGreen)
                     ) {
                         Text(
                             text = producto?.nombre ?: "",
@@ -270,7 +270,7 @@ fun ProductDetailsScreen(
                         .padding(vertical = 16.dp, horizontal = 20.dp),
                     shape = RoundedCornerShape(8.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue,
+                        containerColor = myGreen,
                         contentColor = Color.White
                     ),
                     enabled = !productAddedToCart
@@ -308,7 +308,7 @@ fun ProductDetailsScreen(
         Spacer(modifier = Modifier.height(25.dp))
     }
     state.MessageSucces?.let {
-        MessageCard(message = it, color = Color.Blue)
+        MessageCard(message = it, color = Color.Gray)
     }
 }
 
@@ -318,6 +318,7 @@ fun SuggestedProductCard(
     onClick: () -> Unit
 ) {
     val painter: Painter = rememberImagePainter(data = producto.imagen)
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Card(
         elevation = CardDefaults.cardElevation(8.dp),
@@ -348,7 +349,7 @@ fun SuggestedProductCard(
             Text(
                 text = String.format("%.2f", producto.precio),
                 style = MaterialTheme.typography.titleSmall,
-                color = Color.Blue
+                color = myGreen
             )
         }
     }

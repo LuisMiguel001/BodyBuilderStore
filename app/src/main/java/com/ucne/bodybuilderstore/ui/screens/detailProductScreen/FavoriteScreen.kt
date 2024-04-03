@@ -51,12 +51,13 @@ fun FavoritosScreen(
     navigateBack: () -> Unit
 ) {
     val favoritos by viewModel.getFavorites().collectAsState(initial = emptyList())
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Scaffold(
         topBar = {
             TopAppBar(
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Blue
+                    containerColor = myGreen
                 ),
                 title = { Text("Favoritos", color = Color.White, textAlign = TextAlign.Center) },
                 navigationIcon = {
@@ -71,7 +72,7 @@ fun FavoritosScreen(
             )
         }
     ) {
-        Column{
+        Column {
             Spacer(modifier = Modifier.height(60.dp))
             if (favoritos.isEmpty()) {
                 Column(
@@ -81,6 +82,10 @@ fun FavoritosScreen(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.heart),
+                        contentDescription = "Empty Cart"
+                    )
                     Text(
                         text = "No tienes productos favoritos",
                         style = MaterialTheme.typography.titleSmall

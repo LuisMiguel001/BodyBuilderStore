@@ -1,10 +1,6 @@
 package com.ucne.bodybuilderstore.ui.screens.navigation
 
 import android.annotation.SuppressLint
-import android.view.animation.OvershootInterpolator
-import android.window.SplashScreen
-import androidx.activity.OnBackPressedCallback
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -18,14 +14,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.Divider
@@ -39,11 +33,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,7 +65,6 @@ import com.ucne.bodybuilderstore.ui.screens.splashScreen.SplashScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ProductosScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.accesorioScreen
 import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ropaScreen
-import kotlinx.coroutines.delay
 
 @Composable
 fun Navigation() {
@@ -151,17 +140,17 @@ fun ScaffoldContent(
     val userName = currentUser?.displayName ?: ""
     val userEmail = currentUser?.email ?: ""
     val userPhotoUrl = currentUser?.photoUrl
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     Scaffold(
         topBar = {
             Surface(
-                shape = RoundedCornerShape(bottomStart = 30.dp, bottomEnd = 30.dp),
-                color = Color.Blue
+                color = myGreen
             ) {
                 Column(
                     modifier = Modifier
-                        .height(155.dp)
-                        .background(Color.Blue)
+                        .height(60.dp)
+                        .background(myGreen)
                         .padding(vertical = 8.dp)
                         .fillMaxWidth()
                 ) {
@@ -196,36 +185,12 @@ fun ScaffoldContent(
                             )
                         }
                     }
-                    TextField(
-                        value = "",
-                        onValueChange = { /* Handle search input change */ },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(18.dp),
-                        placeholder = { Text("Search") },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = TextFieldDefaults.textFieldColors(
-                            disabledTextColor = Color.LightGray,
-                            cursorColor = Color.LightGray,
-                            disabledLeadingIconColor = Color.White,
-                            containerColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent
-                        ),
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Filled.Search,
-                                contentDescription = "Search",
-                                tint = Color.Gray
-                            )
-                        }
-                    )
                 }
             }
         },
         bottomBar = {
             NavigationBar(
-                containerColor = Color.Blue
+                containerColor = myGreen
             ) {
                 items.forEachIndexed { index, item ->
                     val icon: Painter = when (index) {
@@ -269,7 +234,7 @@ fun ScaffoldContent(
             ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Blue
+                    color = myGreen
                 ){
                     if (userPhotoUrl != null) {
                         DropdownMenuItem(
@@ -284,11 +249,11 @@ fun ScaffoldContent(
                                             .clip(CircleShape)
                                     )
                                     Text(userName, color = Color.White)
-                                    userEmail?.let { email ->
+                                    userEmail?.let { name ->
                                         DropdownMenuItem(
                                             onClick = { /* Handle user profile click */ },
                                             text = {
-                                                Text(email, color = Color.White)
+                                                Text(name, color = Color.White)
                                             }
                                         )
                                     }
@@ -307,11 +272,11 @@ fun ScaffoldContent(
                                         tint = Color.LightGray
                                     )
                                     Text(userName, color = Color.Black)
-                                    userEmail?.let { email ->
+                                    userEmail?.let { name ->
                                         DropdownMenuItem(
                                             onClick = { /**/ },
                                             text = {
-                                                Text(email, color = Color.White)
+                                                Text(name, color = Color.White)
                                             }
                                         )
                                     }

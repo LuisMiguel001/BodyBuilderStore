@@ -56,6 +56,7 @@ fun SwipeToDeleteContainer(
     var isRemoved by remember { mutableStateOf(false) }
     var showUndoSnackbar by remember { mutableStateOf(false) }
     var removedProductName by remember { mutableStateOf("") }
+    val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
 
     val state = rememberDismissState(
         confirmValueChange = { value ->
@@ -123,7 +124,7 @@ fun SwipeToDeleteContainer(
                                 .size(20.dp)
                         )
                         Spacer(modifier = Modifier.width(3.dp))
-                        Text("UNDO")
+                        Text("UNDO", color = myGreen)
                     }
                 }
             }

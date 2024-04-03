@@ -28,6 +28,11 @@ class StoreRepository @Inject constructor(
         return storeDao.getByType(type)
     }
 
+    fun searchProductsByName(name: String): Flow<List<StoreEntity>> {
+        return storeDao.searchByName(name)
+    }
+
+
     suspend fun markAsFavorite(id: Int) {
         storeDao.markAsFavorite(id)
     }
