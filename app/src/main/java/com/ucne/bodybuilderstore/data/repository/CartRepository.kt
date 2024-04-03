@@ -11,7 +11,7 @@ class CartRepository @Inject constructor(
     private val cartDao: CartDao
 ) {
     suspend fun addToCart(imagen: String, nombre: String, precio: Float, cantidad: Int, locationId: Int, payId: Int) {
-        val item = CartEntity(imagen = imagen, nombre = nombre, precio = precio, cantidad = cantidad, locationId = 1, paymentMethodId = payId)
+        val item = CartEntity(imagen = imagen, nombre = nombre, precio = precio, cantidad = cantidad, locationId = 1, paymentMethodId = 1)
         cartDao.insertOrUpdate(item)
     }
 

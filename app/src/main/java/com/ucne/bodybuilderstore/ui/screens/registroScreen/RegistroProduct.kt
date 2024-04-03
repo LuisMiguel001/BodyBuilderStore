@@ -264,19 +264,6 @@ fun RegistroProduct(
                 Text(text = "El Detalle es Requerido", color = Color.Red)
             }
 
-            /*OutlinedTextField(
-                value = _state.existencia.toString(),
-                onValueChange = { viewModel.onEvent(StoreEvent.Existencia(it)) },
-                label = { Text(text = "Unidades Disponibles") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp),
-                keyboardOptions = KeyboardOptions.Default.copy(
-                    keyboardType = KeyboardType.Number,
-                    imeAction = androidx.compose.ui.text.input.ImeAction.Next
-                )
-            )*/
-
             OutlinedTextField(
                 value = _state.precio.toString(),
                 onValueChange = { viewModel.onEvent(StoreEvent.Precio(it)) },

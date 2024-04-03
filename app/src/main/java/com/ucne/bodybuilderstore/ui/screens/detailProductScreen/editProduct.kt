@@ -202,6 +202,9 @@ fun edit(
                     Text("Agregar Imagen", color = Color.White)
                 }
             }
+            if (state.emptyFields.contains("Imagen")) {
+                Text(text = "La Imagen es Requerida", color = Color.Red)
+            }
 
 
             OutlinedTextField(
@@ -212,7 +215,13 @@ fun edit(
                     .fillMaxWidth()
                     .padding(5.dp)
             )
-
+            if (state.emptyFields.contains("Nombre")) {
+                Text(
+                    text = "El nombre es obligatorio",
+                    color = Color.Red,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
 
             Column {
                 OutlinedTextField(
@@ -253,6 +262,9 @@ fun edit(
                     }
                 }
             }
+            if (state.emptyFields.contains("Tipo")) {
+                Text(text = "El Tipo de Producto es Requerido", color = Color.Red)
+            }
 
             OutlinedTextField(
                 value = descripcion,
@@ -262,6 +274,9 @@ fun edit(
                     .fillMaxWidth()
                     .padding(5.dp)
             )
+            if (state.emptyFields.contains("Descripción")) {
+                Text(text = "La Descripción es Requerida", color = Color.Red)
+            }
 
             OutlinedTextField(
                 value = detalle,
@@ -271,6 +286,9 @@ fun edit(
                     .fillMaxWidth()
                     .padding(5.dp)
             )
+            if (state.emptyFields.contains("Detalle")) {
+                Text(text = "El Detalle es Requerido", color = Color.Red)
+            }
 
 
             OutlinedTextField(
@@ -285,6 +303,9 @@ fun edit(
                     imeAction = androidx.compose.ui.text.input.ImeAction.Next
                 )
             )
+            if (state.emptyFields.contains("Precio")) {
+                Text(text = "El Precio es Requerido", color = Color.Red)
+            }
 
             Row(
                 modifier = Modifier
@@ -324,9 +345,9 @@ fun edit(
                                 precio = precio.toFloatOrNull() ?: 0f,
                                 imagen = imagen,
                                 tipo = tipo
-                            )
+                            ),
+                            navigateBack = { navController.popBackStack() }
                         )
-                        navController.popBackStack()
                     },
                     modifier = Modifier
                         .weight(1f)

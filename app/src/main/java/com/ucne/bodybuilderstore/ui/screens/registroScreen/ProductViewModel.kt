@@ -20,39 +20,6 @@ class ProductViewModel @Inject constructor(
     private val _state = MutableStateFlow(StoreState())
     val state = _state.asStateFlow()
 
-    fun getProductosByType(type: String): Flow<List<StoreEntity>> {
-        return storeRepository.getProductosByType(type)
-    }
-
-    fun getProductoById(id: Int): Flow<StoreEntity?> {
-        return storeRepository.getProductoById(id)
-    }
-
-    fun updateProduct(producto: StoreEntity) {
-        viewModelScope.launch {
-            storeRepository.upsert(producto)
-        }
-    }
-
-    fun toggleFavorite(producto: StoreEntity) {
-        viewModelScope.launch {
-            if (producto.isFavorite) {
-                storeRepository.removeFromFavorites(producto.id)
-            } else {
-                storeRepository.markAsFavorite(producto.id)
-            }
-        }
-    }
-
-    fun searchProductsByName(name: String): Flow<List<StoreEntity>> {
-        return storeRepository.searchProductsByName(name)
-    }
-
-
-    fun getFavorites(): Flow<List<StoreEntity>> {
-        return storeRepository.getFavorites()
-    }
-
     fun onEvent(event: StoreEvent) {
         when (event) {
             is StoreEvent.Id -> {
@@ -221,6 +188,74 @@ class ProductViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+
+    fun updateProduct(producto: StoreEntity, navigateBack: () -> Unit) {
+        viewModelScope.launch {
+            if (isFieldsValid(producto)) {
+                storeRepository.upsert(producto)
+                navigateBack()
+            } else {
+                val emptyFields = mutableListOf<String>()
+                if (producto.nombre.isBlank()) {
+                    emptyFields.add("Nombre")
+                }
+                if (producto.descripcion.isBlank()) {
+                    emptyFields.add("Descripción")
+                }
+                if (producto.detalle.isBlank()) {
+                    emptyFields.add("Detalle")
+                }
+                if (producto.precio <= 0) {
+                    emptyFields.add("Precio")
+                }
+                if (producto.imagen.isBlank()) {
+                    emptyFields.add("Imagen")
+                }
+                if (producto.tipo.isBlank()) {
+                    emptyFields.add("Tipo")
+                }
+
+                _state.update {
+                    it.copy(
+                        error = "Llene los campos requeridos: ${emptyFields.joinToString(", ")}",
+                        emptyFields = emptyFields
+                    )
+                }
+            }
+        }
+    }
+
+    private fun isFieldsValid(producto: StoreEntity): Boolean {
+        return !producto.nombre.isBlank() &&
+                !producto.descripcion.isBlank() &&
+                !producto.detalle.isBlank() &&
+                producto.precio > 0 &&
+                !producto.imagen.isBlank() &&
+                !producto.tipo.isBlank()
+    }
+
+    fun getProductosByType(type: String): Flow<List<StoreEntity>> {
+        return storeRepository.getProductosByType(type)
+    }
+
+    fun getProductoById(id: Int): Flow<StoreEntity?> {
+        return storeRepository.getProductoById(id)
+    }
+
+    fun toggleFavorite(producto: StoreEntity) {
+        viewModelScope.launch {
+            if (producto.isFavorite) {
+                storeRepository.removeFromFavorites(producto.id)
+            } else {
+                storeRepository.markAsFavorite(producto.id)
+            }
+        }
+    }
+
+    fun getFavorites(): Flow<List<StoreEntity>> {
+        return storeRepository.getFavorites()
     }
 }
 

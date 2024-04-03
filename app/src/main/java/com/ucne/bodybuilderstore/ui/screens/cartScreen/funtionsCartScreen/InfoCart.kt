@@ -63,7 +63,7 @@ fun InformationCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "Info Credit Card:",
+                    text = "Info Credit Card: ",
                     fontWeight = FontWeight.Medium
                 )
                 if (payMethod != null) {

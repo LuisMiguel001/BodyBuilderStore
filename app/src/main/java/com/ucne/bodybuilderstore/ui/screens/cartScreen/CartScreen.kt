@@ -276,6 +276,9 @@ fun CartScreen(
             }
         }
     }
+    state.MessageSucces?.let {
+        MessageCard(message = it, color = Color.Gray)
+    }
     state.info?.let {
         MessageCard(message = it, color = Color.Gray)
     }

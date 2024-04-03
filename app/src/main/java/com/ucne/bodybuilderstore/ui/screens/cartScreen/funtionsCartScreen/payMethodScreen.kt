@@ -154,7 +154,7 @@ fun PaymentMethodForm(
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
-                    viewModel.onEvent(PaymentMethodEvent.Save)
+                    viewModel.onEvent(PaymentMethodEvent.onSave)
                     onDismiss()
                 },
                 modifier = Modifier

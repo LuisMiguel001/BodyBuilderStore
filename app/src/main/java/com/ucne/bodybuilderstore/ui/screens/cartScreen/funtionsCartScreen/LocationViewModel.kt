@@ -93,16 +93,6 @@ class LocationViewModel @Inject constructor(
                 val gpsCoordinates = state.value.location.gpsCoordinates
                 val additionalNotes = state.value.location.additionalNotes
 
-                /*if (address.isBlank() || city.isBlank() || estado.isBlank() ||
-                    postalCode.isBlank() || country.isBlank() || gpsCoordinates.isBlank()) {
-                    _state.update {
-                        it.copy(
-                            error = "Por favor, complete todos los campos."
-                        )
-                    }
-                    return
-                }*/
-
                 val location = Location(
                     address = address,
                     city = city,
