@@ -1,7 +1,5 @@
 package com.ucne.bodybuilderstore.ui.screens.typeProductScreen
 
-import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +23,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,10 +33,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -47,14 +47,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseAuth
@@ -66,7 +61,7 @@ import com.ucne.bodybuilderstore.ui.screens.registroScreen.StoreEvent
 @Composable
 fun ProductosScreen(
     viewModel: ProductViewModel = hiltViewModel(),
-    navController: NavController,
+    navController: NavController
 ) {
     val productos by viewModel.getProductosByType("Suplemento")
         .collectAsState(initial = emptyList())
@@ -122,9 +117,7 @@ fun ProductosScreen(
                     onDeleteClick = { viewModel.onEvent(StoreEvent.Delete(producto)) },
                     onFavoriteClick = { viewModel.toggleFavorite(producto) },
                     onClick = { navController.navigate("detalle/${producto.id}") },
-                    onEdit = {
-                        navController.navigate("edit/${producto.id}")
-                    }
+                    onEdit = { navController.navigate("edit/${producto.id}") }
                 )
             }
         }
@@ -144,6 +137,8 @@ fun SuplemetoCard(
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
     val currentUser = FirebaseAuth.getInstance().currentUser
     val userEmail = currentUser?.email ?: ""
+    var showDialog by remember { mutableStateOf(false) }
+
     val isAdmin = userEmail == "admin@gmail.com"
 
     Card(
@@ -214,6 +209,54 @@ fun SuplemetoCard(
                                 .align(Alignment.BottomEnd)
                                 .padding(8.dp)
                         ) {
+                            if (isAdmin) {
+                                IconButton(
+                                    onClick = {
+                                        showDialog = true
+                                    }
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Delete,
+                                        tint = Color.Red,
+                                        contentDescription = "Eliminar"
+                                    )
+                                }
+
+                                if (showDialog) {
+                                    AlertDialog(
+                                        onDismissRequest = {
+                                            showDialog = false
+                                        },
+                                        icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+                                        title = {
+                                            Text(text = "Eliminar Producto")
+                                        },
+                                        text = {
+                                            Text("¿Estás seguro de que quieres eliminar este producto ?  " +
+                                                    "                                                      Esta acción no se puede deshacer.")
+                                        },
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    onDeleteClick()
+                                                    showDialog = false
+                                                }
+                                            ) {
+                                                Text("Eliminar")
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    showDialog = false
+                                                }
+                                            ) {
+                                                Text("Cancelar")
+                                            }
+                                        }
+                                    )
+                                }
+                            }
                             IconButton(
                                 onClick = { onEdit() },
                                 modifier = Modifier
@@ -225,19 +268,6 @@ fun SuplemetoCard(
                                     contentDescription = "Editar"
                                 )
                             }
-                            if (isAdmin) {
-                                IconButton(
-                                    onClick = onDeleteClick,
-                                    modifier = Modifier
-                                        .size(36.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Delete,
-                                        tint = Color.Red,
-                                        contentDescription = "Eliminar"
-                                    )
-                                }
-                            }
                         }
                     }
                 }
@@ -245,4 +275,3 @@ fun SuplemetoCard(
         }
     }
 }
-

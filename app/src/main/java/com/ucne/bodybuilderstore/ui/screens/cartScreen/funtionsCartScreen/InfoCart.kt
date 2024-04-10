@@ -95,14 +95,14 @@ fun OrderSummary(
             ) {
                 Text(text = "Total Items in Cart:", fontWeight = FontWeight.Medium)
                 Spacer(modifier = Modifier.width(185.dp))
-                Text(text = "$totalItemsInCart")
+                Text(text = "$totalItemsInCart", maxLines = 1)
             }
             Row(
                 modifier = Modifier.padding(8.dp)
             ) {
                 Text(text = "Total Products Count:", fontWeight = FontWeight.Medium)
                 Spacer(modifier = Modifier.width(163.dp))
-                Text(text = "$totalProductsCount")
+                Text(text = "$totalProductsCount", maxLines = 1)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -119,9 +119,10 @@ fun OrderSummary(
                 )
                 Spacer(modifier = Modifier.width(256.dp))
                 Text(
-                    text = String.format("$%.2f", totalPrice),
+                    text = String.format("\$%.2f", totalPrice),
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = Color.Black,
+                    maxLines = 1
                 )
             }
         }

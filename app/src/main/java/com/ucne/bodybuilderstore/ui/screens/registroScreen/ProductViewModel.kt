@@ -80,14 +80,6 @@ class ProductViewModel @Inject constructor(
                 }
             }
 
-            /*is StoreEvent.Existencia -> {
-                _state.update {
-                    it.copy(
-                        store = it.store.copy(existencia = event.existencia.toIntOrNull() ?: 0)
-                    )
-                }
-            }*/
-
             StoreEvent.onSave -> {
                 val nombre = state.value.store.nombre
                 val descripcion = state.value.store.descripcion
@@ -95,7 +87,6 @@ class ProductViewModel @Inject constructor(
                 val precio = state.value.store.precio
                 val imagen = state.value.store.imagen
                 val tipo = state.value.store.tipo
-                /*val existencia = state.value.store.existencia*/
 
                 val emptyFields = mutableListOf<String>()
                 if (nombre.isBlank()) {
@@ -134,7 +125,6 @@ class ProductViewModel @Inject constructor(
                     precio = precio,
                     imagen = imagen,
                     tipo = tipo,
-                    /*existencia = existencia*/
                 )
 
                 _state.update {
@@ -189,7 +179,6 @@ class ProductViewModel @Inject constructor(
             }
         }
     }
-
 
     fun updateProduct(producto: StoreEntity, navigateBack: () -> Unit) {
         viewModelScope.launch {
@@ -275,7 +264,6 @@ sealed interface StoreEvent {
     data class Precio(val precio: String) : StoreEvent
     data class Imagen(val imagen: String) : StoreEvent
     data class TipoProducto(val tipo: String) : StoreEvent
-    /*data class Existencia(val existencia: String) : StoreEvent*/
     data class Delete(val store: StoreEntity) : StoreEvent
     object onSave : StoreEvent
     object onNew : StoreEvent

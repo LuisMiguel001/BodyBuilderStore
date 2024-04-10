@@ -12,45 +12,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.ucne.bodybuilderstore.R
-import com.ucne.bodybuilderstore.ui.screens.typeProductScreen.ProductosScreen
 
 @Composable
-fun LoginScreen(
+fun RegistroScreen(
     navController: NavController,
     viewModel: LoginViewModel = hiltViewModel()
 ) {
@@ -58,10 +40,12 @@ fun LoginScreen(
 
     Column(
         modifier = Modifier.background(Color.LightGray)
-    ){
+    ) {
         Surface(
-            color = Color.LightGray,
-            modifier = Modifier.fillMaxWidth()
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .clip(shape = RoundedCornerShape(bottomEnd = 32.dp, bottomStart = 32.dp))
+                .fillMaxWidth()
         ) {
             Image(
                 painter = painterResource(id = R.drawable._2646230),
@@ -74,24 +58,29 @@ fun LoginScreen(
         }
 
         Surface(
-            color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier
-                .clip(shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
-                .fillMaxWidth()
+            color = Color.LightGray,
+            modifier = Modifier.fillMaxWidth()
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxSize()
             ) {
-                Text(
-                    text = "Iniciar sesión",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 40.sp
-                )
-                UserForm(isCreateAccount = false) { email, password ->
-                    Log.d("BuildingMaster", "Logueándose con $email y $password")
-                    viewModel.signInWithEmailAndPssword(email, password, {
+                Column {
+                    Text(
+                        text = "Registrarte",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 40.sp
+                    )
+                    Text(
+                        text = "Es rápido y fácil.",
+                        fontWeight = FontWeight.Light,
+                        fontSize = 20.sp
+                    )
+                }
+                UserForm(isCreateAccount = true) { email, password ->
+                    Log.d("BuildingMaster", "Creando cuenta con $email y $password")
+                    viewModel.createUserWithEmailAndPassword(email, password, {
                         navController.navigate("suplemento")
                     }, { error ->
                         errorMessage.value = error
@@ -111,13 +100,13 @@ fun LoginScreen(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "No tienes cuenta?")
+                    Text(text = "Ya tienes cuenta?")
                     Text(
-                        text = "Regístrate",
+                        text = "Iniciar sesión",
                         modifier = Modifier
-                            .clickable { navController.navigate("registroUser") }
+                            .clickable { navController.navigate("login") }
                             .padding(start = 5.dp),
-                        color = Color.Yellow
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
             }

@@ -21,13 +21,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.KeyboardArrowLeft
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,12 +45,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -63,8 +60,6 @@ import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartViewModel
 import com.ucne.bodybuilderstore.ui.screens.registroScreen.ProductViewModel
 import kotlinx.coroutines.delay
 
-
-@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ProductDetailsScreen(
@@ -79,6 +74,7 @@ fun ProductDetailsScreen(
     val state by viewModelC.state.collectAsStateWithLifecycle()
     val productosSimilares by viewModel.getProductosByType(producto?.tipo ?: "").collectAsState(initial = emptyList())
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
+    var isFavorite by remember { mutableStateOf(producto?.isFavorite ?: false) }
 
     Column(
         modifier = Modifier
@@ -118,14 +114,35 @@ fun ProductDetailsScreen(
                 )
             }
         }
-        Image(
-            painter = painter,
-            contentDescription = null,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(250.dp)
-                .clip(MaterialTheme.shapes.medium)
-        )
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Image(
+                painter = painter,
+                contentDescription = null,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(250.dp)
+                    .clip(MaterialTheme.shapes.medium)
+            )
+
+            IconButton(
+                onClick = {
+                    isFavorite = !isFavorite
+                    producto?.let { viewModel.toggleFavorite(it) }
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp)
+            ) {
+                Icon(
+                    imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                    contentDescription = "favorite",
+                    tint = if (isFavorite) Color.Red else Color.Gray,
+                    modifier = Modifier.size(48.dp)
+                )
+            }
+        }
 
         Box(
             modifier = Modifier
@@ -219,37 +236,6 @@ fun ProductDetailsScreen(
                     }
                 }
 
-               /* Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp, horizontal = 8.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.White
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = Color.Black,
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                ) {
-                                    append("Unidades Disponibles: ")
-                                }
-                                withStyle(style = SpanStyle(color = Color.Blue)) {
-                                    append("${producto?.existencia}")
-                                }
-                            },
-                            style = MaterialTheme.typography.titleMedium,
-                        )
-                    }
-                }*/
                 Button(
                     onClick = {
                         producto?.let {
@@ -260,7 +246,6 @@ fun ProductDetailsScreen(
                                 cantidad = 1,
                                 locationId = it.id,
                                 payId = it.id,
-                               /* existencia = it.existencia*/
                             )
                         }
                         productAddedToCart = true

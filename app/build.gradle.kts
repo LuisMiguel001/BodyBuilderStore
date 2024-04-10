@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
+    //Icons Extended
+    implementation("androidx.compose.material:material-icons-extended:1.6.4")
+
     //Firebase
     implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
@@ -72,7 +75,10 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
 
     implementation(libs.androidx.material)
+    //Image
     implementation(libs.coil.compose)
+
+    //Biometric
     implementation(libs.androidx.biometric.ktx)
     implementation(libs.androidx.appcompat)
 

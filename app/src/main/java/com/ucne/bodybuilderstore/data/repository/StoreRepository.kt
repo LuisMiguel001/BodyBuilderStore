@@ -16,10 +16,6 @@ class StoreRepository @Inject constructor(
         storeDao.delete(store)
     }
 
-    fun getProducto(): Flow<List<StoreEntity>> {
-        return storeDao.getAll()
-    }
-
     fun getProductoById(id: Int): Flow<StoreEntity?> {
         return storeDao.getById(id)
     }
@@ -27,11 +23,6 @@ class StoreRepository @Inject constructor(
     fun getProductosByType(type: String): Flow<List<StoreEntity>> {
         return storeDao.getByType(type)
     }
-
-    fun searchProductsByName(name: String): Flow<List<StoreEntity>> {
-        return storeDao.searchByName(name)
-    }
-
 
     suspend fun markAsFavorite(id: Int) {
         storeDao.markAsFavorite(id)

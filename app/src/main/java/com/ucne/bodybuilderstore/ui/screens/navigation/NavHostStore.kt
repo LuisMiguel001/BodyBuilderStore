@@ -57,6 +57,7 @@ import coil.compose.rememberImagePainter
 import com.google.firebase.auth.FirebaseAuth
 import com.ucne.bodybuilderstore.R
 import com.ucne.bodybuilderstore.login.LoginScreen
+import com.ucne.bodybuilderstore.login.RegistroScreen
 import com.ucne.bodybuilderstore.ui.screens.cartScreen.CartScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.FavoritosScreen
 import com.ucne.bodybuilderstore.ui.screens.detailProductScreen.ProductDetailsScreen
@@ -89,6 +90,9 @@ fun Navigation() {
                     }
                 }
             }
+        }
+        composable("registroUser") {
+            RegistroScreen(navController = navController)
         }
         composable("suplemento") {
             ScaffoldContent(navController, items, selectedItem = 0, menuExpanded = false) {

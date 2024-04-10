@@ -130,8 +130,4 @@ class LoginViewModel @Inject constructor() : ViewModel() {
 
         return true
     }
-
-    fun getCurrentUser(): FirebaseUser? {
-        return auth.currentUser
-    }
 }

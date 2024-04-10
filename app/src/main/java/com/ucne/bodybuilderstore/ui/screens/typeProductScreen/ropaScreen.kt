@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -30,6 +32,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -133,6 +136,8 @@ fun RopaCard(
     val myGreen = Color(android.graphics.Color.parseColor("#04764B"))
     val currentUser = FirebaseAuth.getInstance().currentUser
     val userEmail = currentUser?.email ?: ""
+    var showDialog by remember { mutableStateOf(false) }
+
     val isAdmin = userEmail == "admin@gmail.com"
 
     Card(
@@ -203,14 +208,49 @@ fun RopaCard(
                         ) {
                             if (isAdmin) {
                                 IconButton(
-                                    onClick = onDeleteClick,
-                                    modifier = Modifier
-                                        .size(36.dp)
+                                    onClick = {
+                                        showDialog = true
+                                    }
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Delete,
                                         tint = Color.Red,
                                         contentDescription = "Eliminar"
+                                    )
+                                }
+
+                                if (showDialog) {
+                                    AlertDialog(
+                                        onDismissRequest = {
+                                            showDialog = false
+                                        },
+                                        icon = { Icon(Icons.Default.Warning, contentDescription = null) },
+                                        title = {
+                                            Text(text = "Eliminar Producto")
+                                        },
+                                        text = {
+                                            Text("¿Estás seguro de que quieres eliminar este producto ?  " +
+                                                    "                                                      Esta acción no se puede deshacer.")
+                                        },
+                                        confirmButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    onDeleteClick()
+                                                    showDialog = false
+                                                }
+                                            ) {
+                                                Text("Eliminar")
+                                            }
+                                        },
+                                        dismissButton = {
+                                            TextButton(
+                                                onClick = {
+                                                    showDialog = false
+                                                }
+                                            ) {
+                                                Text("Cancelar")
+                                            }
+                                        }
                                     )
                                 }
                             }
