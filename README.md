@@ -1,6 +1,5 @@
-                                                                                    BodyBuilderStore
-
-                                                                 Aplicación destinada a las ventas de productos fitness.
+											BodyBuilderStore
+				Aplicación destinada a las ventas de productos fitness.
 
 ** Proyecto Final AP2 (Luis Miguel Jerez Caceres). **
 
@@ -9,16 +8,16 @@
 
 **Pantalla: **Splash
 
-![](https://i.postimg.cc/rsX0CthC/Imagen2.png)
+![](https://i.postimg.cc/FsCtg74N/splash.png)
 
 
 **Pantalla:** Login
 
 Uso: Al ejecutar esta aplicacion se abrirá en el Sign In en el cual puedes ingresar tus credenciales en ingresar dentro de la aplicación, en casos de que no tengas un usuario creado pudes crear uno en el apartado de Registrarse que se encuentra en el Sign In.
 
-![](https://i.postimg.cc/WbstNVx3/Imagen1.png)
+![](https://i.postimg.cc/TPHBPk6v/login.png)
 
-![](https://i.postimg.cc/05TFD29k/registro.png)
+![](https://i.postimg.cc/XqxfVzRw/regUser.png)
 
 **CREDENCIALES ADMIN:**
 
@@ -29,32 +28,34 @@ Clave: @Dmin123
 
 **Pantalla: **Inicio
 
-![](https://i.postimg.cc/K8KLnFfN/menu.png)
+![](https://i.postimg.cc/SRjsM1XL/menu.png)
 
 **Pantalla: **DropdowmMenu
 
-![](https://i.postimg.cc/x8TgQh24/menue-Drop.png)
+![](https://i.postimg.cc/htKG8G7P/menu2.png)
 
 **Pantalla: **Detail Product
 
-![](https://i.postimg.cc/0NjS0Ssh/datail.png)
+![](https://i.postimg.cc/9Fb2hYrC/prodas.png)
 
-![](https://i.postimg.cc/c41L3SZb/suggest.png)
+![](https://i.postimg.cc/66hg25wh/prod.png)
 
 **Pantalla: **Cart
 
-![](https://i.postimg.cc/13cg0t6D/cart.png)
+![](https://i.postimg.cc/KzDqMJXY/cart3.png)
+
+![](https://i.postimg.cc/65ycW9Qq/cart.png)
 
 **Pantalla: **Favorite Product
 
-![](https://i.postimg.cc/Sx2qLQPD/favoritos.png)
+![](https://i.postimg.cc/rpJxGbp7/fav.png)
 
 **Pantalla: **Registro de Producto
 
-![](https://i.postimg.cc/CLvkBJyb/registrops.png)
+![](https://i.postimg.cc/43q71ggL/rs.png)
 
 
 **Pantalla: **Editor de Productos
 
-![](https://i.postimg.cc/90s2KvRG/ed.png)
+![](https://i.postimg.cc/rwvR1Tch/ed.png)
 
