@@ -1,4 +1,4 @@
-											BodyBuilderStore
+						BodyBuilderStore
 				Aplicación destinada a las ventas de productos fitness.
 
 ** Proyecto Final AP2 (Luis Miguel Jerez Caceres). **
