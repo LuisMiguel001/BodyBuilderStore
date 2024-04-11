@@ -21,7 +21,7 @@ Uso: Al ejecutar esta aplicacion se abrirá en el Sign In en el cual puedes ingr
 
 **CREDENCIALES ADMIN:**
 
-Correo: admin@aplicada.com
+Correo: admin@gmail.com
 
 Clave: @Dmin123
 
